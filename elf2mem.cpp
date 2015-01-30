@@ -27,7 +27,7 @@
 using namespace memory;
 
 #define ELEMENT_PER_LINE 16
-#if 0
+
 void print_mem_elem(std::vector<std::ostream> &outs, size_t pos, int v) {
 	auto outn = pos % outs.size();
 	auto nelem = pos / outs.size();
@@ -38,10 +38,11 @@ void print_mem_elem(std::vector<std::ostream> &outs, size_t pos, int v) {
 
 void print_mem_header(const char *name, std::vector<std::ostream> &outs, size_t pos) {
 	if (outs.size() > 1) {
-		outs[0] << "size_t " << name << "_address = " << std::hex << std::showbase << pos << std::endl;
+		outs[0] << "const size_t " << name << "_address_begin = " << std::hex << std::showbase << pos << std::endl;
+		outs[0] << "const size_t " << name << "_index_begin = " << std::hex << std::showbase << pos / outs.size() << std::endl;
 	}
 	for (int i = 0; i < outs.size(); ++i) {
-		outs[i] << "char " << name << std::dec << i << " = {" << std::endl;
+		outs[i] << "unsigned char " << name << std::dec << i << "[] = {" << std::endl;
 	}
 }
 
@@ -49,53 +50,11 @@ void print_mem_footer(const char *name, std::vector<std::ostream> &outs, size_t 
 	for (int i = 0; i < outs.size(); ++i) {
 		outs[i] << "};" << std::endl;
 	}
+	outs[0] << "const size_t " << name << "_address_end = " << std::hex << std::showbase << pos << std::endl;
+	outs[0] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << pos / outs.size() << std::endl;
 }
 
 void print_mem(const char *name, std::vector<std::ostream &> &outs, size_t pos, Memory mem) {
-	print_mem_header(name, outs, pos);
-	while (!mem.empty()) {
-		auto t = mem.popChunk();
-		size_t addr = t.first;
-		auto ch = t.second.getContaint();
-		for (; pos < addr; ++pos) {
-			print_mem_elem(outs, pos, 0);
-		}
-		for (; pos < addr + ch.size(); ++pos) {
-			print_mem_elem(outs, pos, ch[addr - pos]);
-		}
-	}
-	print_mem_footer(name, outs, pos);
-}
-
-#else
-void print_mem_elem(std::vector<FILE *>outs, size_t pos, int v) {
-	auto fp = outs[pos % outs.size()];
-	auto nelem = pos / outs.size();
-	const char *header = (nelem % ELEMENT_PER_LINE == 0) ? "\t" : "";
-	const char *footer = (nelem % ELEMENT_PER_LINE == (ELEMENT_PER_LINE - 1)) ? ",\n" : ", ";
-	fprintf(fp, "%s0x%02hhx%s", header, (char)v, footer);
-}
-
-void print_mem_header(const char *name, std::vector<FILE *>outs, size_t pos) {
-	if (outs.size() > 1) {
-		fprintf(outs[0], "const size_t %s_address_begin = 0x%zx;\n", name, pos);
-		fprintf(outs[0], "const size_t %s_index_begin = 0x%zx;\n", name, pos / outs.size());
-	}
-	for (size_t i = 0; i < outs.size(); ++i) {
-		fprintf(outs[i], "unsigned char %s%zd[] = {\n", name, i);
-	}
-}
-
-void print_mem_footer(const char *name, std::vector<FILE *>outs, size_t pos) {
-	for (size_t i = 0; i < outs.size(); ++i) {
-		fprintf(outs[i], "};\n");
-	}
-	fprintf(outs[0], "const size_t %s_address_end = 0x%zx;\n", name, pos);
-	fprintf(outs[0], "const size_t %s_index_end = 0x%zx;\n", name, pos / outs.size());
-}
-
-void print_mem(const char *name, std::vector<FILE *>outs, size_t start, size_t end, Memory mem) {
-	size_t pos = start;
 	print_mem_header(name, outs, pos);
 	while (!mem.empty()) {
 		auto t = mem.popChunk();
@@ -113,7 +72,7 @@ void print_mem(const char *name, std::vector<FILE *>outs, size_t start, size_t e
 	}
 	print_mem_footer(name, outs, pos);
 }
-#endif
+
 
 /**
  * Read data of given section from ELF file.
@@ -314,6 +273,7 @@ int main (int argc, char **argv) {
 	Memory mem;
 	Elf32_Addr addr = read_elf(mem, input_file);
 
+	// std::vector<FILE *> outs;
 	std::vector<FILE *> outs;
 	// std::vector<std::ostringstream> outs;
 	for (int i = 0; i < 4; ++i) {
