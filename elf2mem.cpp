@@ -265,28 +265,28 @@ unsigned int read_elf(Memory &mem, const char *file) {
 
 
 	/* READ (text, data) */
-	char *Text_p = NULL;
 	if (found_text) {
 		char *Text_p = read_section(elf, textndx);
 		std::vector<char> v( Text_p, Text_p + Shead[textndx].sh_size);
 		Chunk ch(v);
 		mem.addChunk(Shead[textndx].sh_addr, ch);
+		free(Text_p);
 	}
 
-	char *Rodata_p = NULL;
 	if (found_rodata) {
-		Rodata_p = read_section(elf, rodatandx);
+		char *Rodata_p = read_section(elf, rodatandx);
 		std::vector<char> v( Rodata_p, Rodata_p + Shead[rodatandx].sh_size);
 		Chunk ch(v);
 		mem.addChunk(Shead[rodatandx].sh_addr, ch);
+		free(Rodata_p);
 	}
 
-	char *Data_p = NULL;
 	if (found_data) {
-		Data_p = read_section(elf, datandx);
+		char *Data_p = read_section(elf, datandx);
 		std::vector<char> v( Data_p, Data_p + Shead[datandx].sh_size);
 		Chunk ch(v);
 		mem.addChunk(Shead[datandx].sh_addr, ch);
+		free(Data_p);
 	}
 
 	mem.entry(Phead[0].p_vaddr);
@@ -297,10 +297,7 @@ unsigned int read_elf(Memory &mem, const char *file) {
 
 	free(Shead);
 	free(Phead);
-	free(Text_p);
-	free(Data_p);
 	// free(bss_p);
-	free(Rodata_p);
 	elf_end(elf);
 	fclose(fp);
 	return a_entry;
@@ -321,9 +318,9 @@ int main (int argc, char **argv) {
 	std::vector<FILE *> outs;
 	// std::vector<std::ostringstream> outs;
 	for (int i = 0; i < 4; ++i) {
-		auto ostr = new std::ostringstream();
-		*ostr << output_file << i << ".h";
-		auto fp = fopen(ostr->str().c_str(), "w");
+		std::ostringstream ostr;
+		ostr << output_file << i << ".h";
+		auto fp = fopen(ostr.str().c_str(), "w");
 		outs.push_back(fp);
 		// outs.push_back(ostr);
 	}
