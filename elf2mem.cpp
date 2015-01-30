@@ -24,11 +24,6 @@
 #include <sstream>
 #include "memchunk.h"
 
-#define ALOCLIMIT		0x0d000000		/* default size is 218MB   */
-#define MINADDR			0x00001000		/* minimum address is 4KB  */
-#define MEMSIZE			0x0e000000		/* default size is 234MB   */
-#define HDRADDR		0x00001000
-
 using namespace memory;
 
 #define ELEMENT_PER_LINE 16
