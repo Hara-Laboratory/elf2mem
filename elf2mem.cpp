@@ -56,7 +56,7 @@ int main (int argc, char **argv) {
 	while ((opt = getopt(argc, argv, "t:o:b:e:En:")) != -1) {
 		switch (opt) {
 			case 't':
-				if (!strcmp(optarg, "c-array")) {
+				if (!!strcmp(optarg, "c-array")) {
 					std::cerr << "unrecognizable output type: " << optarg << std::endl;
 					printusage(argv[0], std::cerr);
 					exit(EXIT_FAILURE);
@@ -93,8 +93,12 @@ int main (int argc, char **argv) {
 
 	if (optind == argc - 1) {
 		input_file = argv[optind];
-	} else {
+	} else if (optind == argc) {
 		std::cerr << "input file is not given" << std::endl;
+		printusage(argv[0], std::cerr);
+		exit(EXIT_FAILURE);
+	} else {
+		std::cerr << "too many arguments" << std::endl;
 		printusage(argv[0], std::cerr);
 		exit(EXIT_FAILURE);
 	}
