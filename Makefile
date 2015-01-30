@@ -2,7 +2,8 @@ CFLAGS=-g -O2
 #CXXFLAGS=-g -O2 -std=c++11
 #CXXFLAGS=-g -Og -std=c++11
 #CXXFLAGS=-g -std=c++11 -O3 -Wall -Wno-format-extra-args
-CXXFLAGS=-g -std=c++0x -O3 -Wall -Wno-format-extra-args -Wno-unused-but-set-variable
+CXXFLAGS=-g -std=c++0x -O3 -Wall -Wno-format-extra-args
+
 LDFLAGS=-lelf
 SOURCES=memchunk.cpp printerC.cpp readerElf.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
