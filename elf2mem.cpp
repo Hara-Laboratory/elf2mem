@@ -72,16 +72,7 @@ static size_t read_entry(Elf *elf) {
 }
 
 /* READ_ELF() */
-unsigned int read_elf(Memory &mem, const char *file) {
-	/* FILEOPEN */
-	FILE *fp;
-
-	fp = fopen(file, "r");
-	if (fp == NULL){
-		printf("Can't open elf_file\n");
-		exit(1);
-	}
-
+unsigned int read_elf(Memory &mem, FILE *fp) {
 	int fd = fileno(fp);
 
 	elf_version(EV_CURRENT);
@@ -225,8 +216,14 @@ int main (int argc, char **argv) {
 	char *output_file = argv[2];
 	char *output_name = argv[3];
 
+	FILE *fp = fopen(input_file, "r");
+	if (fp == NULL){
+		printf("Can't open elf_file\n");
+		exit(1);
+	}
+
 	Memory mem;
-	Elf32_Addr addr = read_elf(mem, input_file);
+	Elf32_Addr addr = read_elf(mem, fp);
 
 	/*
 	// std::vector<FILE *> outs;
