@@ -120,7 +120,7 @@ int main (int argc, char **argv) {
 		ostr << basename(input_file) << ".h";
 		output_file = new std::string(ostr.str());
 	}
-	std::cout << "output: " << output_file << std::endl;
+	std::cout << "output: " << *output_file << std::endl;
 
 	if (output_name == NULL) {
 		output_name = basename(input_file);
