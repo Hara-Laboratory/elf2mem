@@ -80,7 +80,7 @@ void print_mem_header(const char *name, std::vector<FILE *>outs, size_t pos) {
 	if (outs.size() > 1) {
 		fprintf(outs[0], "size_t %s_address_begin = 0x%zx;\n", name, pos);
 	}
-	for (int i = 0; i < outs.size(); ++i) {
+	for (size_t i = 0; i < outs.size(); ++i) {
 		fprintf(outs[i], "unsigned char %s%d[] = {\n", name, i);
 	}
 }
