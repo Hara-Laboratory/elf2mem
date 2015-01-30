@@ -30,3 +30,9 @@ elf2mem -s 4 -n MEM -o aout.h -b 0x01000 -e 0x0e000 a.out
 ## Dependencies
 - libelf
 - getopt
+
+## Supporting sections
+- `.text`
+- `.data`
+- `.rodata`
+- `.bss` (nothing to do for support ;)
