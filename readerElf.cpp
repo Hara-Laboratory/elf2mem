@@ -40,6 +40,28 @@ static char *read_section(Elf *elf, size_t index) {
 }
 
 /**
+ * Read data of given section from ELF file to Memory.
+ *
+ * @param elf file
+ * @param index of section to read
+ * @return pointer to malloced data
+ */
+static void read_section(Memory &mem, Elf *elf, size_t index) {
+	char *buf = read_section(elf, index);
+
+	Elf_Scn *scn = elf_getscn(elf, index);
+	forcenonnull(scn,"elf_getscn() failed\n");
+
+	Elf32_Shdr *shdr = elf32_getshdr(scn);
+	forcenonnull(shdr,"elf32_getshdr() failed\n");
+
+	std::vector<char> v(buf, buf + shdr->sh_size);
+	Chunk ch(v);
+	mem.addChunk(shdr->sh_addr, ch);
+	free(buf);
+}
+
+/**
  * Read entry point from ELF file.
  *
  * @param elf file
@@ -68,14 +90,6 @@ unsigned int read_elf(Memory &mem, FILE *fp) {
 	}
 
 	Elf32_Shdr	*Shead = (Elf32_Shdr *)malloc(shnum * sizeof(Elf32_Shdr));
-	size_t symtabndx;
-	for (size_t i = 0;  i < shnum; ++i) {
-		Elf_Scn *scn = elf_getscn(elf, i);
-		Elf32_Shdr *shdr = elf32_getshdr(scn);
-		Shead[i] = *shdr;
-		if (shdr->sh_type == SHT_SYMTAB)
-			symtabndx = i;
-	}
 
 	size_t shstrndx;
 	if (elf_getshdrstrndx (elf , &shstrndx) != 0) {
@@ -84,8 +98,7 @@ unsigned int read_elf(Memory &mem, FILE *fp) {
 	}
 
 	unsigned int ptrheap = 0;
-	bool found_text = false, found_data = false, found_bss = false, found_rodata = false;
-	size_t textndx, datandx, bssndx, strtabndx, rodatandx;
+	bool found_text = false;
 	for (size_t i = 0; i < shnum; ++i) {
 		char *name;
 		if ((name = elf_strptr(elf, shstrndx, Shead[i].sh_name)) == NULL) {
@@ -96,28 +109,23 @@ unsigned int read_elf(Memory &mem, FILE *fp) {
 
 		if		(!strcmp(name, ".text")) {
 			found_text = true;
-			textndx = i;
+			read_section(mem, elf, i);
 			ptrheap = std::max(ptrheap, Shead[i].sh_addr + Shead[i].sh_size);
 		} 
 		else if (!strcmp(name, ".data")) {
-			found_data = true;
-			datandx = i;
+			read_section(mem, elf, i);
 			ptrheap = std::max(ptrheap, Shead[i].sh_addr + Shead[i].sh_size);
 		} 
 		else if (!strcmp(name, ".bss")) {
-			found_bss = true;
-			bssndx = i;
 			ptrheap = std::max(ptrheap, Shead[i].sh_addr + Shead[i].sh_size);
 			//	  else if (!strcmp(name, ".symtab"))
 			//		symtabndx = i;
 		} 
 		else if (!strcmp(name, ".rodata")) {
-			found_rodata = true;
-			rodatandx = i;
+			read_section(mem, elf, i);
 			ptrheap = std::max(ptrheap, Shead[i].sh_addr + Shead[i].sh_size);
 		}
 		else if (!strcmp(name, ".strtab")) {
-			strtabndx = i;
 		}
 	}
 
@@ -145,33 +153,6 @@ unsigned int read_elf(Memory &mem, FILE *fp) {
 		}
 		//printf(YELLOW"program %ld size=%8.8lx, offset=%8.8lx\n"RESET, i, Phead[i].p_filesz, Phead[i].p_offset);
 	}
-
-
-	/* READ (text, data) */
-	if (found_text) {
-		char *Text_p = read_section(elf, textndx);
-		std::vector<char> v( Text_p, Text_p + Shead[textndx].sh_size);
-		Chunk ch(v);
-		mem.addChunk(Shead[textndx].sh_addr, ch);
-		free(Text_p);
-	}
-
-	if (found_rodata) {
-		char *Rodata_p = read_section(elf, rodatandx);
-		std::vector<char> v( Rodata_p, Rodata_p + Shead[rodatandx].sh_size);
-		Chunk ch(v);
-		mem.addChunk(Shead[rodatandx].sh_addr, ch);
-		free(Rodata_p);
-	}
-
-	if (found_data) {
-		char *Data_p = read_section(elf, datandx);
-		std::vector<char> v( Data_p, Data_p + Shead[datandx].sh_size);
-		Chunk ch(v);
-		mem.addChunk(Shead[datandx].sh_addr, ch);
-		free(Data_p);
-	}
-
 	mem.entry(Phead[0].p_vaddr);
 	Elf32_Addr e_entry = read_entry(elf);
 	Elf32_Addr a_entry = Phead[0].p_vaddr;
