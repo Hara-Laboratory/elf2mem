@@ -81,3 +81,20 @@ void print_mem(const char *name, std::vector<std::ostream *> &outs, size_t start
 	}
 	print_mem_footer(name, outs, pos);
 }
+
+void print_mem(const char *name, std::ostream &ost, size_t start, size_t end, Memory mem) {
+	std::vector<std::ostream *> outstreams;
+	std::vector<std::ostringstream *> outstrstreams;
+	for (int i = 0; i < 4; ++i) {
+		auto ostr = new std::ostringstream();
+		outstreams.push_back(ostr);
+		outstrstreams.push_back(ostr);
+		// outs.push_back(ostr);
+	}
+
+	print_mem(name, outstreams, start, end, mem);
+
+	for (auto && ostr : outstrstreams) {
+		ost << ostr->str();
+	}
+}

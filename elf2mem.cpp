@@ -58,19 +58,8 @@ int main (int argc, char **argv) {
 	}
 	*/
 
-	std::vector<std::ostream *> outstreams;
-	std::vector<std::ostringstream *> outstrstreams;
-	for (int i = 0; i < 4; ++i) {
-		auto ostr = new std::ostringstream();
-		outstreams.push_back(ostr);
-		outstrstreams.push_back(ostr);
-		// outs.push_back(ostr);
-	}
-	print_mem(output_name, outstreams, addr, addr + 0x200, mem);
-
 	std::ofstream ofs(output_file);
-	for (auto && ostr : outstrstreams) {
-		ofs << ostr->str();
-	}
+	print_mem(output_name, ofs, addr, addr + 0x200, mem);
+
 	return 0;
 }
