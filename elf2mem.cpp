@@ -11,12 +11,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <libelf.h>
-#include <elf.h>
-#include <libelf.h>
 #include <math.h>
+#include <unistd.h>
 
 #include<cstddef>
-#include <ostream>
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include "memchunk.h"
@@ -27,14 +26,78 @@
 
 using namespace memory;
 
+void printusage(const char *name, std::ostream &ost) {
+	ost << "USAGE: " << name << " [options] [-o <output_file>] <input_file> " << std::endl;
+	ost << "OPTIONS:" << std::endl;
+	ost << "\t-b <addr>\tStart address." << std::endl;
+	ost << "\t-B\toutput from the first section." << std::endl;
+	ost << "\t-e <addr>\tEnd address." << std::endl;
+	ost << "\t-E\tOutput until end of the sections. (default)" << std::endl;
+	ost << "\t-t <type>\tOutput type. (one of 'c-array')" << std::endl;
+	ost << "\t-o <filename>\tOutput file name (scheme)." << std::endl;
+	ost << std::endl;
+	ost << "for output type 'c-array':" << std::endl;
+	ost << "\t-n <name>\tIdentifier name." << std::endl;
+}
+
 int main (int argc, char **argv) {
 	if (argc != 4) {
-		printf("USAGE: %s <input_file> <output_file> <name>", argv[0]);
 	}
 
-	char *input_file = argv[1];
-	char *output_file = argv[2];
-	char *output_name = argv[3];
+	const char *input_file = NULL;
+	const char *output_file = NULL;
+	const char *output_name = NULL;
+	bool begin_address_set = false;
+	size_t begin_address;
+	bool end_address_set = false;
+	size_t end_address;
+
+	int opt;
+	while ((opt = getopt(argc, argv, "t:o:b:e:En:")) != -1) {
+		switch (opt) {
+			case 't':
+				if (!strcmp(optarg, "c-array")) {
+					std::cerr << "unrecognizable output type: " << optarg << std::endl;
+					printusage(argv[0], std::cerr);
+					exit(EXIT_FAILURE);
+				}
+				break;
+			case 'o':
+				output_file = optarg;
+				break;
+			case 'b':
+			{
+				std::istringstream istr(optarg);
+				istr >> begin_address;
+				begin_address_set = true;
+				break;
+			}
+			case 'B':
+				begin_address_set = false;
+				break;
+			case 'e':
+			{
+				std::istringstream istr(optarg);
+				istr >> end_address;
+				end_address_set = true;
+				break;
+			}
+			case 'E':
+				end_address_set = false;
+				break;
+			case 'n':
+				output_name = optarg;
+				break;
+		}
+	}
+
+	if (optind == argc - 1) {
+		input_file = argv[optind];
+	} else {
+		std::cerr << "input file is not given" << std::endl;
+		printusage(argv[0], std::cerr);
+		exit(EXIT_FAILURE);
+	}
 
 	FILE *fp = fopen(input_file, "r");
 	if (fp == NULL){
