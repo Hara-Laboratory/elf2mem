@@ -8,7 +8,7 @@ Link ELF files and dump the memory.
 
 ## Example
 ```sh
-elf2mem -s 4 -n MEM -o aout.h -b 0x a.out
+elf2mem -s 4 -n MEM -o aout.h -b 0x01000 -e 0x0e000 a.out
 ```
 
 ## Options
