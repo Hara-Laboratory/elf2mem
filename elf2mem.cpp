@@ -284,9 +284,9 @@ unsigned int read_elf(Memory &mem, const char *file) {
 	char *Data_p = NULL;
 	if (found_data) {
 		Data_p = read_section(elf, datandx);
-		std::vector<char> v( Rodata_p, Rodata_p + Shead[rodatandx].sh_size);
+		std::vector<char> v( Data_p, Data_p + Shead[datandx].sh_size);
 		Chunk ch(v);
-		mem.addChunk(Shead[rodatandx].sh_addr, ch);
+		mem.addChunk(Shead[datandx].sh_addr, ch);
 	}
 
 	mem.entry(Phead[0].p_vaddr);
