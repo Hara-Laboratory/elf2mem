@@ -62,37 +62,40 @@ void print_mem_footer(const char *name, std::vector<std::ostream *> &outs, size_
 	*outs[0] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << ceilDiv(pos, outs.size()) << std::endl;
 }
 
-void print_mem(const char *name, std::vector<std::ostream *> &outs, size_t start, size_t end, Memory mem) {
-	size_t pos = start;
-	print_mem_header(name, outs, pos);
+void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
+	size_t pos = start_address_set_ ? start_address_ : mem.firstAddress();
+
+	print_mem_header(name_, outs, pos);
 	while (!mem.empty()) {
 		auto t = mem.popChunk();
 		size_t addr = t.first;
 		auto ch = t.second.getContaint();
-		for (; pos < addr; ++pos) {
+		for (; pos < addr && (!end_address_set_ || pos < end_address_) ; ++pos) {
 			print_mem_elem(outs, pos, 0);
 		}
-		for (; pos < addr + ch.size(); ++pos) {
+		for (; pos < addr + ch.size() && (!end_address_set_ || pos < end_address_); ++pos) {
 			print_mem_elem(outs, pos, static_cast<unsigned char>(ch[pos - addr]));
 		}
 	}
-	for (; pos < end; ++pos) {
-		print_mem_elem(outs, pos, 0);
+	if (end_address_set_) {
+		for (; pos < end_address_; ++pos) {
+			print_mem_elem(outs, pos, 0);
+		}
 	}
-	print_mem_footer(name, outs, pos);
+	print_mem_footer(name_, outs, pos);
 }
 
-void print_mem(const char *name, std::ostream &ost, size_t start, size_t end, Memory mem) {
+void printerC::print_mem(std::ostream &ost, Memory mem) {
 	std::vector<std::ostream *> outstreams;
 	std::vector<std::ostringstream *> outstrstreams;
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < split_; ++i) {
 		auto ostr = new std::ostringstream();
 		outstreams.push_back(ostr);
 		outstrstreams.push_back(ostr);
 		// outs.push_back(ostr);
 	}
 
-	print_mem(name, outstreams, start, end, mem);
+	print_mem(outstreams, mem);
 
 	for (auto && ostr : outstrstreams) {
 		ost << ostr->str();

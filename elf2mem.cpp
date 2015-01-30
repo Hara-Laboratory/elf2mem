@@ -106,7 +106,7 @@ int main (int argc, char **argv) {
 	}
 
 	Memory mem;
-	Elf32_Addr addr = read_elf(mem, fp);
+	read_elf(mem, fp);
 
 	/*
 	// std::vector<FILE *> outs;
@@ -122,7 +122,8 @@ int main (int argc, char **argv) {
 	*/
 
 	std::ofstream ofs(output_file);
-	print_mem(output_name, ofs, addr, addr + 0x200, mem);
+	printerC printerc(output_name, begin_address_set, begin_address, end_address_set, end_address, 4);
+	printerc.print_mem(ofs, mem);
 
 	return 0;
 }
