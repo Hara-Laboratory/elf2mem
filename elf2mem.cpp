@@ -34,8 +34,10 @@ void printusage(const char *name, std::ostream &ost) {
 	ost << "\t-B\toutput from the first section." << std::endl;
 	ost << "\t-e <addr>\tEnd address." << std::endl;
 	ost << "\t-E\tOutput until end of the sections. (default)" << std::endl;
-	ost << "\t-t <type>\tOutput type. (one of 'c-array')" << std::endl;
+	ost << "\t-t <type>\tOutput type. (default: 'c-array')" << std::endl;
+	ost << "\t\tAvailable: 'c-array'" << std::endl;
 	ost << "\t-o <filename>\tOutput file name (scheme)." << std::endl;
+	ost << "\t-s <num>\tSplit number." << std::endl;
 	ost << std::endl;
 	ost << "for output type 'c-array':" << std::endl;
 	ost << "\t-n <name>\tIdentifier name." << std::endl;
@@ -50,9 +52,10 @@ int main (int argc, char **argv) {
 	size_t begin_address;
 	bool end_address_set = false;
 	size_t end_address;
+	int split = 1;
 
 	int opt;
-	while ((opt = getopt(argc, argv, "t:o:b:e:En:")) != -1) {
+	while ((opt = getopt(argc, argv, "t:o:b:e:En:s:")) != -1) {
 		switch (opt) {
 			case 't':
 				if (!!strcmp(optarg, "c-array")) {
@@ -87,6 +90,18 @@ int main (int argc, char **argv) {
 			case 'n':
 				output_name = optarg;
 				break;
+			case 's':
+			{
+				std::istringstream istr(optarg);
+				istr >> split;
+				if (split <= 0) {
+					std::cerr << "split number must be greater than zero." << std::endl;
+				}
+				break;
+			}
+			default:
+				std::cerr << "unknown option." << std::endl;
+				exit(EXIT_FAILURE);
 		}
 	}
 
@@ -125,7 +140,7 @@ int main (int argc, char **argv) {
 	*/
 
 	std::ofstream ofs(output_file);
-	printerC printerc(output_name, begin_address_set, begin_address, end_address_set, end_address, 4);
+	printerC printerc(output_name, begin_address_set, begin_address, end_address_set, end_address, split);
 	printerc.print_mem(ofs, mem);
 
 	return 0;
