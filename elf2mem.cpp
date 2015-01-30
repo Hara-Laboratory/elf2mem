@@ -291,6 +291,7 @@ unsigned int read_elf(Memory &mem, const char *file) {
 
 	mem.entry(Phead[0].p_vaddr);
 	Elf32_Addr e_entry = read_entry(elf);
+	Elf32_Addr a_entry = Phead[0].p_vaddr;
 
 	printf("e_entry=%8.8x\n" , e_entry);
 
@@ -298,11 +299,11 @@ unsigned int read_elf(Memory &mem, const char *file) {
 	free(Phead);
 	free(Text_p);
 	free(Data_p);
-	//	free(bss_p);
+	// free(bss_p);
 	free(Rodata_p);
 	elf_end(elf);
 	fclose(fp);
-	return (Phead[0].p_vaddr);
+	return a_entry;
 }
 
 int main (int argc, char **argv) {
