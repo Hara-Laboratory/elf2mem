@@ -10,6 +10,8 @@ Link ELF files and dump the memory.
 ```sh
 elf2mem -s 4 -n MEM -o aout.h -b 0x01000 -e 0x0e000 a.out
 ```
+It outputs memory from 0x1000 to 0xe000, scattering each byte into four files.
+In the end, a array in each file will have 0x340 elements.
 
 ## Options
 | Option          | Description                                            |
