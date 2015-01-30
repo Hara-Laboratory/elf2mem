@@ -46,11 +46,15 @@ void print_mem_elem(std::vector<std::ostream *> &outs, size_t pos, int v) {
 }
 
 void print_mem_header(const char *name, std::vector<std::ostream *> &outs, size_t pos) {
-	if (outs.size() > 1) {
+	if (outs.size() > 0) {
 		*outs[0] << "const size_t " << name << "_address_begin = " << std::hex << std::showbase << pos << std::endl;
 	}
-	for (size_t i = 0; i < outs.size(); ++i) {
-		*outs[i] << "unsigned char " << name << std::dec << i << "[] = {" << std::endl;
+	if (outs.size() == 1) {
+		*outs[0] << "unsigned char " << name << "[] = {" << std::endl;
+	} else {
+		for (size_t i = 0; i < outs.size(); ++i) {
+			*outs[i] << "unsigned char " << name << std::dec << i << "[] = {" << std::endl;
+		}
 	}
 }
 
@@ -58,8 +62,10 @@ void print_mem_footer(const char *name, std::vector<std::ostream *> &outs, size_
 	for (size_t i = 0; i < outs.size(); ++i) {
 		*outs[i] << "};" << std::endl;
 	}
-	*outs[0] << "const size_t " << name << "_address_end = " << std::hex << std::showbase << pos << std::endl;
-	*outs[0] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << ceilDiv(pos, outs.size()) << std::endl;
+	if (outs.size() > 0) {
+		*outs[outs.size() - 1] << "const size_t " << name << "_address_end = " << std::hex << std::showbase << pos << std::endl;
+		*outs[outs.size() - 1] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << ceilDiv(pos, outs.size()) << std::endl;
+	}
 }
 
 void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
