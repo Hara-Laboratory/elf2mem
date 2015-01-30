@@ -6,6 +6,11 @@ Link ELF files and dump the memory.
 ./elf2mem [options] [-o <output_file>] <input_file> 
 ```
 
+## Example
+```sh
+elf2mem -s 4 -n MEM -o aout.h -b 0x a.out
+```
+
 ## Options
 | Option          | Description                                            |
 | --------------- | ------------------------------------------------------ |
