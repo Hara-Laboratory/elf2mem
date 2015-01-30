@@ -24,5 +24,10 @@ namespace memory {
 		return std::make_pair(k, v);
 	}
 
+	size_t Memory::firstAddress(void) {
+		auto it = chunks.begin();
+		return it->first;
+	}
+
 	bool Memory::empty(void) { return chunks.empty(); }
 }

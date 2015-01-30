@@ -26,6 +26,7 @@ class Memory {
 		size_t entry() { return entry_; };
 		bool addChunk(size_t start_addr, Chunk chunk);
 		std::pair<size_t, Chunk> popChunk(void);
+		size_t firstAddress(void);
 		bool empty(void);
 };
 }
