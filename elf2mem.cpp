@@ -28,6 +28,7 @@ using namespace memory;
 
 void printusage(const char *name, std::ostream &ost) {
 	ost << "USAGE: " << name << " [options] [-o <output_file>] <input_file> " << std::endl;
+	ost << std::endl;
 	ost << "OPTIONS:" << std::endl;
 	ost << "\t-b <addr>\tStart address." << std::endl;
 	ost << "\t-B\toutput from the first section." << std::endl;
@@ -41,8 +42,6 @@ void printusage(const char *name, std::ostream &ost) {
 }
 
 int main (int argc, char **argv) {
-	if (argc != 4) {
-	}
 
 	const char *input_file = NULL;
 	const char *output_file = NULL;
