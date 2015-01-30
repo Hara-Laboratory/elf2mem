@@ -107,7 +107,7 @@ void print_mem(const char *name, std::vector<FILE *>outs, size_t pos, Memory mem
 			print_mem_elem(outs, pos, 0);
 		}
 		for (; pos < addr + ch.size(); ++pos) {
-			print_mem_elem(outs, pos, ch[addr - pos]);
+			print_mem_elem(outs, pos, ch[pos - addr]);
 		}
 	}
 	print_mem_footer(name, outs, pos);
