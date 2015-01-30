@@ -103,7 +103,7 @@ void printerC::print_mem(std::ostream &ost, Memory mem) {
 
 	print_mem(outstreams, mem);
 
-	for (auto && ostr : outstrstreams) {
-		ost << ostr->str();
+	for (int i = 0; i < split_; ++i) {
+		ost << outstrstreams[i]->str();
 	}
 }

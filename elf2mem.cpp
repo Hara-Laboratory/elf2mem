@@ -46,12 +46,12 @@ void printusage(const char *name, std::ostream &ost) {
 int main (int argc, char **argv) {
 
 	const char *input_file = NULL;
-	std::string *output_file = nullptr;
+	std::string *output_file = NULL;
 	const char *output_name = NULL;
 	bool begin_address_set = false;
-	size_t begin_address;
+	size_t begin_address = 0;
 	bool end_address_set = false;
-	size_t end_address;
+	size_t end_address = 0;
 	int split = 1;
 
 	int opt;
@@ -69,7 +69,7 @@ int main (int argc, char **argv) {
 				break;
 			case 'b':
 			{
-				begin_address = std::stoull(optarg, nullptr, 0);
+				begin_address = std::stoull(optarg, NULL, 0);
 				begin_address_set = true;
 				break;
 			}
@@ -78,7 +78,7 @@ int main (int argc, char **argv) {
 				break;
 			case 'e':
 			{
-				end_address = std::stoull(optarg, nullptr, 0);
+				end_address = std::stoull(optarg, NULL, 0);
 				end_address_set = true;
 				break;
 			}
@@ -115,7 +115,7 @@ int main (int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
-	if (output_file == nullptr) {
+	if (output_file == NULL) {
 		std::ostringstream ostr;
 		ostr << basename(input_file) << ".h";
 		output_file = new std::string(ostr.str());
