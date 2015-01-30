@@ -21,57 +21,12 @@
 #define errorif2(test,fmt,...) do{if(test){fprintf(stderr, "%s:%s:%d: " fmt "\n",__FILE__, __func__, __LINE__, __VA_ARGS__);exit(EXIT_FAILURE);}}while(0)
 #include<cstddef>
 #include <ostream>
+#include <fstream>
 #include <sstream>
 #include "memchunk.h"
+#include "printerC.h"
 
 using namespace memory;
-
-#define ELEMENT_PER_LINE 16
-
-void print_mem_elem(std::vector<std::ostream> &outs, size_t pos, int v) {
-	auto outn = pos % outs.size();
-	auto nelem = pos / outs.size();
-	const char *header = (nelem % ELEMENT_PER_LINE == 0) ? "\t" : "";
-	const char *footer = (nelem % ELEMENT_PER_LINE == (ELEMENT_PER_LINE - 1)) ? ",\n" : ", ";
-	outs[outn] << header << std::hex << std::showbase << v << footer;
-}
-
-void print_mem_header(const char *name, std::vector<std::ostream> &outs, size_t pos) {
-	if (outs.size() > 1) {
-		outs[0] << "const size_t " << name << "_address_begin = " << std::hex << std::showbase << pos << std::endl;
-		outs[0] << "const size_t " << name << "_index_begin = " << std::hex << std::showbase << pos / outs.size() << std::endl;
-	}
-	for (int i = 0; i < outs.size(); ++i) {
-		outs[i] << "unsigned char " << name << std::dec << i << "[] = {" << std::endl;
-	}
-}
-
-void print_mem_footer(const char *name, std::vector<std::ostream> &outs, size_t pos) {
-	for (int i = 0; i < outs.size(); ++i) {
-		outs[i] << "};" << std::endl;
-	}
-	outs[0] << "const size_t " << name << "_address_end = " << std::hex << std::showbase << pos << std::endl;
-	outs[0] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << pos / outs.size() << std::endl;
-}
-
-void print_mem(const char *name, std::vector<std::ostream &> &outs, size_t pos, Memory mem) {
-	print_mem_header(name, outs, pos);
-	while (!mem.empty()) {
-		auto t = mem.popChunk();
-		size_t addr = t.first;
-		auto ch = t.second.getContaint();
-		for (; pos < addr; ++pos) {
-			print_mem_elem(outs, pos, 0);
-		}
-		for (; pos < addr + ch.size(); ++pos) {
-			print_mem_elem(outs, pos, ch[pos - addr]);
-		}
-	}
-	for (; pos < end; ++pos) {
-		print_mem_elem(outs, pos, 0);
-	}
-	print_mem_footer(name, outs, pos);
-}
 
 
 /**
@@ -273,6 +228,7 @@ int main (int argc, char **argv) {
 	Memory mem;
 	Elf32_Addr addr = read_elf(mem, input_file);
 
+	/*
 	// std::vector<FILE *> outs;
 	std::vector<FILE *> outs;
 	// std::vector<std::ostringstream> outs;
@@ -283,8 +239,21 @@ int main (int argc, char **argv) {
 		outs.push_back(fp);
 		// outs.push_back(ostr);
 	}
-	print_mem(output_name, outs, 0, MEMORY_SIZE, mem);
+	*/
+
+	std::vector<std::ostream *> outstreams;
+	std::vector<std::ostringstream *> outstrstreams;
+	for (int i = 0; i < 4; ++i) {
+		auto ostr = new std::ostringstream();
+		outstreams.push_back(ostr);
+		outstrstreams.push_back(ostr);
+		// outs.push_back(ostr);
+	}
+	print_mem(output_name, outstreams, addr, addr + 0x200, mem);
+
+	std::ofstream ofs(output_file);
+	for (auto && ostr : outstrstreams) {
+		ofs << ostr->str();
+	}
 	return 0;
 }
-
-// vim: ts=8 sw=2 :
