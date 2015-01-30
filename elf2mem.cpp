@@ -31,13 +31,13 @@ void printusage(const char *name, std::ostream &ost) {
 	ost << std::endl;
 	ost << "OPTIONS:" << std::endl;
 	ost << "\t-b <addr>\tStart address." << std::endl;
-	ost << "\t-B\toutput from the first section." << std::endl;
+	ost << "\t-B\tOutput from the first section. (default)" << std::endl;
 	ost << "\t-e <addr>\tEnd address." << std::endl;
 	ost << "\t-E\tOutput until end of the sections. (default)" << std::endl;
-	ost << "\t-t <type>\tOutput type. (default: 'c-array')" << std::endl;
-	ost << "\t\tAvailable: 'c-array'" << std::endl;
+	ost << "\t-t <type>\tOutput type." << std::endl;
+	ost << "\t\t\tAvailable choices: 'c-array' (default)" << std::endl;
 	ost << "\t-o <filename>\tOutput file name (scheme)." << std::endl;
-	ost << "\t-s <num>\tSplit number." << std::endl;
+	ost << "\t-s <num>\tSplit number. (default: 1)" << std::endl;
 	ost << std::endl;
 	ost << "for output type 'c-array':" << std::endl;
 	ost << "\t-n <name>\tIdentifier name." << std::endl;
