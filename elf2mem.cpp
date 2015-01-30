@@ -78,7 +78,8 @@ void print_mem_elem(std::vector<FILE *>outs, size_t pos, int v) {
 
 void print_mem_header(const char *name, std::vector<FILE *>outs, size_t pos) {
 	if (outs.size() > 1) {
-		fprintf(outs[0], "size_t %s_index_begin = 0x%zx;\n", name, pos / outs.size());
+		fprintf(outs[0], "const size_t %s_address_begin = 0x%zx;\n", name, pos);
+		fprintf(outs[0], "const size_t %s_index_begin = 0x%zx;\n", name, pos / outs.size());
 	}
 	for (size_t i = 0; i < outs.size(); ++i) {
 		fprintf(outs[i], "unsigned char %s%zd[] = {\n", name, i);
@@ -89,7 +90,8 @@ void print_mem_footer(const char *name, std::vector<FILE *>outs, size_t pos) {
 	for (size_t i = 0; i < outs.size(); ++i) {
 		fprintf(outs[i], "};\n");
 	}
-	fprintf(outs[0], "size_t %s_index_end = 0x%zx;\n", name, pos / outs.size());
+	fprintf(outs[0], "const size_t %s_address_end = 0x%zx;\n", name, pos);
+	fprintf(outs[0], "const size_t %s_index_end = 0x%zx;\n", name, pos / outs.size());
 }
 
 void print_mem(const char *name, std::vector<FILE *>outs, size_t start, size_t end, Memory mem) {
