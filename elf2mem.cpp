@@ -155,10 +155,6 @@ static size_t read_entry(Elf *elf) {
 unsigned int read_elf(Memory &mem, const char *file) {
 	/* FILEOPEN */
 	FILE *fp;
-	int i;
-
-	Elf_Data *data;
-	GElf_Sym dst;
 
 	fp = fopen(file, "r");
 	if (fp == NULL){
