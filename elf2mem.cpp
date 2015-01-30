@@ -2,7 +2,7 @@
  * @file
  * @brief Load program from given ELF executable file.
  * @author SAKAMOTO Noriaki <noriakis@cad.ce.titech.ac.jp>
- * @date 2014-08-05
+ * @date 2015-01-30
  */
 
 #include <stdio.h>
