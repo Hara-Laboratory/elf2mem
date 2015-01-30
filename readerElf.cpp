@@ -89,8 +89,6 @@ unsigned int read_elf(Memory &mem, FILE *fp) {
 		exit(EXIT_FAILURE);
 	}
 
-	Elf32_Shdr	*Shead = (Elf32_Shdr *)malloc(shnum * sizeof(Elf32_Shdr));
-
 	size_t shstrndx;
 	if (elf_getshdrstrndx (elf , &shstrndx) != 0) {
 		fprintf(stderr, " elf_getshdrstrndx () failed. ");
@@ -100,30 +98,33 @@ unsigned int read_elf(Memory &mem, FILE *fp) {
 	unsigned int ptrheap = 0;
 	bool found_text = false;
 	for (size_t i = 0; i < shnum; ++i) {
+		Elf_Scn *scn = elf_getscn(elf, i);
+		Elf32_Shdr *shdr = elf32_getshdr(scn);
+
 		char *name;
-		if ((name = elf_strptr(elf, shstrndx, Shead[i].sh_name)) == NULL) {
+		if ((name = elf_strptr(elf, shstrndx, shdr->sh_name)) == NULL) {
 			fprintf(stderr, "elf_strptr() failed.\n");
 			exit(EXIT_FAILURE);
 		}
-		//printf("section %s: addr=%x offset=%x link=%x\n", name, Shead[i].sh_addr, Shead[i].sh_offset, Shead[i].sh_link);
+		//printf("section %s: addr=%x offset=%x link=%x\n", name, shdr->sh_addr, shdr->sh_offset, shdr->sh_link);
 
 		if		(!strcmp(name, ".text")) {
 			found_text = true;
 			read_section(mem, elf, i);
-			ptrheap = std::max(ptrheap, Shead[i].sh_addr + Shead[i].sh_size);
+			ptrheap = std::max(ptrheap, shdr->sh_addr + shdr->sh_size);
 		} 
 		else if (!strcmp(name, ".data")) {
 			read_section(mem, elf, i);
-			ptrheap = std::max(ptrheap, Shead[i].sh_addr + Shead[i].sh_size);
+			ptrheap = std::max(ptrheap, shdr->sh_addr + shdr->sh_size);
 		} 
 		else if (!strcmp(name, ".bss")) {
-			ptrheap = std::max(ptrheap, Shead[i].sh_addr + Shead[i].sh_size);
+			ptrheap = std::max(ptrheap, shdr->sh_addr + shdr->sh_size);
 			//	  else if (!strcmp(name, ".symtab"))
 			//		symtabndx = i;
 		} 
 		else if (!strcmp(name, ".rodata")) {
 			read_section(mem, elf, i);
-			ptrheap = std::max(ptrheap, Shead[i].sh_addr + Shead[i].sh_size);
+			ptrheap = std::max(ptrheap, shdr->sh_addr + shdr->sh_size);
 		}
 		else if (!strcmp(name, ".strtab")) {
 		}
@@ -159,7 +160,6 @@ unsigned int read_elf(Memory &mem, FILE *fp) {
 
 	printf("e_entry=%8.8x\n" , e_entry);
 
-	free(Shead);
 	free(Phead);
 	// free(bss_p);
 	elf_end(elf);
