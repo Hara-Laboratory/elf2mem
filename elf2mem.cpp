@@ -78,21 +78,22 @@ void print_mem_elem(std::vector<FILE *>outs, size_t pos, int v) {
 
 void print_mem_header(const char *name, std::vector<FILE *>outs, size_t pos) {
 	if (outs.size() > 1) {
-		fprintf(outs[0], "size_t %s_address_begin = 0x%zx;\n", name, pos);
+		fprintf(outs[0], "size_t %s_index_begin = 0x%zx;\n", name, pos / outs.size());
 	}
 	for (size_t i = 0; i < outs.size(); ++i) {
-		fprintf(outs[i], "unsigned char %s%d[] = {\n", name, i);
+		fprintf(outs[i], "unsigned char %s%zd[] = {\n", name, i);
 	}
 }
 
 void print_mem_footer(const char *name, std::vector<FILE *>outs, size_t pos) {
-	for (int i = 0; i < outs.size(); ++i) {
+	for (size_t i = 0; i < outs.size(); ++i) {
 		fprintf(outs[i], "};\n");
 	}
-	fprintf(outs[0], "size_t %s_address_end = 0x%zx;\n", name, pos);
+	fprintf(outs[0], "size_t %s_index_end = 0x%zx;\n", name, pos / outs.size());
 }
 
-void print_mem(const char *name, std::vector<FILE *>outs, size_t pos, Memory mem) {
+void print_mem(const char *name, std::vector<FILE *>outs, size_t start, size_t end, Memory mem) {
+	size_t pos = start;
 	print_mem_header(name, outs, pos);
 	while (!mem.empty()) {
 		auto t = mem.popChunk();
@@ -104,6 +105,9 @@ void print_mem(const char *name, std::vector<FILE *>outs, size_t pos, Memory mem
 		for (; pos < addr + ch.size(); ++pos) {
 			print_mem_elem(outs, pos, ch[pos - addr]);
 		}
+	}
+	for (; pos < end; ++pos) {
+		print_mem_elem(outs, pos, 0);
 	}
 	print_mem_footer(name, outs, pos);
 }
@@ -294,6 +298,8 @@ unsigned int read_elf(Memory &mem, const char *file) {
 	return a_entry;
 }
 
+#define MEMORY_SIZE 0x0e000000
+
 int main (int argc, char **argv) {
 	if (argc != 4) {
 		printf("USAGE: %s <input_file> <output_file> <name>", argv[0]);
@@ -315,7 +321,7 @@ int main (int argc, char **argv) {
 		outs.push_back(fp);
 		// outs.push_back(ostr);
 	}
-	print_mem(output_name, outs, addr, mem);
+	print_mem(output_name, outs, 0, MEMORY_SIZE, mem);
 	return 0;
 }
 
