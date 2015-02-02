@@ -1,7 +1,7 @@
 #include <vector>
 #include "byteorder.h"
 
-int byteorder::index(int n) {
+int byteorder::index(int n) const {
 	return order_[n];
 }
 

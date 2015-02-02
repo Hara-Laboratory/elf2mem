@@ -6,7 +6,7 @@ class byteorder {
 		std::vector<int> order_;
 	public:
 		byteorder(std::vector<int> order) : order_(order) {};
-		int index(int);
+		int index(int) const;
 
 		static byteorder bigendian(int n);
 		static byteorder littleendian(int n);
