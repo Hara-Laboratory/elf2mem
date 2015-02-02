@@ -108,7 +108,7 @@ void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
 			uint64_t v = 0;
 			for (int i = 0; i < width_ / 8; i++) {
 				v <<= 8;
-				v |= ch [pos - addr + i];
+				v |= ch [pos - addr + order_.index(i)];
 			}
 			print_mem_elem(outs, pos, width_, v);
 
