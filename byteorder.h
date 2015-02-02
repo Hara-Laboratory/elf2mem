@@ -1,11 +1,12 @@
 #if !defined(BYTEORDER_H_READ)
 #define BYTEORDER_H_READ
 #include <vector>
-class byteorder {
+struct byteorder {
 	private:
 		std::vector<int> order_;
 	public:
-		byteorder(std::vector<int> order) : order_(order) {};
+		byteorder(std::vector<int> const& order) : order_(order) {};
+		byteorder() = default;
 		int index(int) const;
 
 		static byteorder bigendian(int n);
