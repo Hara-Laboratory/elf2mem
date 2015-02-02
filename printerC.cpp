@@ -1,11 +1,31 @@
 #include <stdio.h>
 #include <limits>
 #include <iomanip>
+#include <iostream>
 #include "printerC.h"
 
 #define ELEMENT_PER_LINE 16
 
 using namespace memory;
+
+const char* char_type(int width) {
+	switch (width) {
+		case 8:
+			return "uint8_t";
+		case 16:
+			return "uint16_t";
+		case 24:
+			return "uint24_t";
+		case 32:
+			return "uint32_t";
+		case 64:
+			return "uint64_t";
+		default:
+			std::cerr << "unsupported bit-width" << std::endl;
+			exit(EXIT_FAILURE);
+			break;
+	}
+}
 
 template <typename T>
 static inline T ceilDiv(T dividend, T divisor) {
@@ -36,59 +56,71 @@ static inline T ceilDiv(T dividend, T divisor) {
     return roundedTowardsZeroQuotient;
 }
 
-void print_mem_elem(std::vector<std::ostream *> &outs, size_t pos, int v) {
-	auto outn = pos % outs.size();
-	auto nelem = pos / outs.size();
+void print_mem_elem(std::vector<std::ostream *> &outs, size_t pos, int width, uint64_t v) {
+	auto outn = pos / ceilDiv(width, 8) % outs.size();
+	auto nelem = pos / ceilDiv(width, 8) / outs.size();
 	const char *header = (nelem % ELEMENT_PER_LINE == 0) ? "\t" : "";
 	const char *footer = (nelem % ELEMENT_PER_LINE == (ELEMENT_PER_LINE - 1)) ? ",\n" : ", ";
-	// *outs[outn] << header << std::hex << std::showbase << std::setfill('0') << std::setw(2) << v << footer;
-	*outs[outn] << header << "0x" << std::hex << std::noshowbase << std::setfill('0') << std::setw(2) << v << footer;
+	// *outs[outn] << "/* " << std::hex << std::showbase << pos << "*/";
+	*outs[outn] << header << "0x" << std::hex << std::noshowbase << std::setfill('0') << std::setw(ceilDiv(width, 4)) << v << footer;
 }
 
-void print_mem_header(const char *name, std::vector<std::ostream *> &outs, size_t pos) {
+void print_mem_header(const char *name, std::vector<std::ostream *> &outs, int width, size_t pos) {
 	if (outs.size() > 0) {
 		*outs[0] << "const size_t " << name << "_address_begin = " << std::hex << std::showbase << pos << std::endl;
 	}
 	if (outs.size() == 1) {
-		*outs[0] << "unsigned char " << name << "[] = {" << std::endl;
+		*outs[0] << char_type(width) << " " << name << "[] = {" << std::endl;
 	} else {
 		for (size_t i = 0; i < outs.size(); ++i) {
-			*outs[i] << "unsigned char " << name << std::dec << i << "[] = {" << std::endl;
+			*outs[i] << char_type(width) << " " << name << std::dec << i << "[] = {" << std::endl;
 		}
 	}
 }
 
-void print_mem_footer(const char *name, std::vector<std::ostream *> &outs, size_t pos) {
+void print_mem_footer(const char *name, std::vector<std::ostream *> &outs, int width, size_t pos) {
 	for (size_t i = 0; i < outs.size(); ++i) {
 		*outs[i] << "};" << std::endl;
 	}
 	if (outs.size() > 0) {
 		*outs[outs.size() - 1] << "const size_t " << name << "_address_end = " << std::hex << std::showbase << pos << std::endl;
-		*outs[outs.size() - 1] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << ceilDiv(pos, outs.size()) << std::endl;
+		*outs[outs.size() - 1] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << ceilDiv(pos, width / 8 * outs.size()) << std::endl;
 	}
 }
 
 void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
 	size_t pos = start_address_set_ ? start_address_ : mem.firstAddress();
 
-	print_mem_header(name_, outs, pos);
+	print_mem_header(name_, outs, width_, pos);
 	while (!mem.empty()) {
 		auto t = mem.popChunk();
 		size_t addr = t.first;
 		auto ch = t.second.getContaint();
-		for (; pos < addr && (!end_address_set_ || pos < end_address_) ; ++pos) {
-			print_mem_elem(outs, pos, 0);
+		while (pos < addr && (!end_address_set_ || pos < end_address_)) {
+			print_mem_elem(outs, pos, width_, 0);
+			pos += width_ / 8;
 		}
-		for (; pos < addr + ch.size() && (!end_address_set_ || pos < end_address_); ++pos) {
-			print_mem_elem(outs, pos, static_cast<unsigned char>(ch[pos - addr]));
+		if (pos != addr) {
+			std::cerr << "address is not aligned" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		while (pos < addr + ch.size() && (!end_address_set_ || pos < end_address_)) {
+			uint64_t v = 0;
+			for (int i = 0; i < width_ / 8; i++) {
+				v <<= 8;
+				v |= ch [pos - addr + i];
+			}
+			print_mem_elem(outs, pos, width_, v);
+
+			pos += width_ / 8;
 		}
 	}
 	if (end_address_set_) {
 		for (; pos < end_address_; ++pos) {
-			print_mem_elem(outs, pos, 0);
+			print_mem_elem(outs, pos, width_, 0);
 		}
 	}
-	print_mem_footer(name_, outs, pos);
+	print_mem_footer(name_, outs, width_, pos);
 }
 
 void printerC::print_mem(std::ostream &ost, Memory mem) {
