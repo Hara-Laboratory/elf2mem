@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <libelf.h>
 #include <math.h>
-#include <unistd.h>
+#include <getopt.h>
 
 #include<cstddef>
 #include <iostream>
@@ -40,13 +40,14 @@ void printusage(const char *name, std::ostream &ost) {
 	ost << "\t-s <num>\tSplit number. (default: 1)" << std::endl;
 	ost << "\t-w <num>\tOutput bitwidth." << std::endl;
 	ost << "\t\t\tAvailable choices: 8 (default), 16, 32, 64" << std::endl;
+	ost << "\t--byte-order <string>\tOutput byte order." << std::endl;
+	ost << "\t\t\tAvailable choices: little-endian, big-endian (default)" << std::endl;
 	ost << std::endl;
 	ost << "for output type 'c-array':" << std::endl;
 	ost << "\t-n <name>\tIdentifier name. (default: basename of input file)" << std::endl;
 }
 
 int main (int argc, char **argv) {
-
 	const char *input_file = NULL;
 	std::string *output_file = NULL;
 	const char *output_name = NULL;
@@ -57,9 +58,41 @@ int main (int argc, char **argv) {
 	int split = 1;
 	int width = 8;
 
+	static struct option long_options[] = {
+		{"start-address",  	required_argument, 	0,  'b' },
+		{"start-minimal",  	no_argument, 		0,  'B' },
+		{"end-address",  	required_argument, 	0,  'e' },
+		{"end-minimal",  	no_argument, 		0,  'E' },
+		{"type",  			required_argument, 	0,  't' },
+		{"output",  		required_argument, 	0,  'o' },
+		{"split",  			required_argument, 	0,  's' },
+		{"bitwidth",		required_argument, 	0,  'w' },
+		{"byte-order",  		required_argument, 	0,  0 },
+		{"identifier",		required_argument, 	0,  'n' },
+		{0,         0,                 0,  0 }
+	};
 	int opt;
-	while ((opt = getopt(argc, argv, "t:o:b:e:En:w:s:")) != -1) {
+	while (1) {
+		int option_index = 0;
+		opt = getopt_long(argc, argv, "t:o:b:e:En:w:s:", long_options, &option_index);
+		if (opt == -1)
+			break;
+
 		switch (opt) {
+			case 0:
+				if (!strcmp(long_options[option_index].name, "byte-order")) {
+					if (!strcmp(optarg, "little-endian")) {
+						std::cerr << "little endian is not supported yet!" << std::endl;
+						printusage(argv[0], std::cerr);
+						exit(EXIT_FAILURE);
+					} else if (!strcmp(optarg, "big-endian")) {
+					} else {
+						std::cerr << "unrecognizable byte-order: " << optarg << std::endl;
+						printusage(argv[0], std::cerr);
+						exit(EXIT_FAILURE);
+					}
+				}
+				break;
 			case 't':
 				if (!!strcmp(optarg, "c-array")) {
 					std::cerr << "unrecognizable output type: " << optarg << std::endl;
