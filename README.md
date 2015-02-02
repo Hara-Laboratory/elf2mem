@@ -23,8 +23,8 @@ In the end, a array in each file will have 0x340 elements.
 | `-t` _type_  		*or* `--type` _type_   		| Output type. <br> Available choices: `c-array` (default) |
 | `-o` _filename_ 	*or* `--output` _filename_	| Output file name (scheme).                             |
 | `-s` _num_      	*or* `--split` _num_ 			| Split number.                                          |
-| `-w` _num_      	*or* `--bit-width` _num_ 		| Output bit-width.                                      |
-| `--byte-order` _order_ 						| Output byte-order. <br> Available choices: `bit-endian` (default), `little-endian` |
+| `-w` _num_      	*or* `--bit-width` _num_ 		| Output bit-width. <br> Available choices: 8 (default), 16, 32, 64 |
+| `--byte-order` _order_ 						| Output byte-order. <br> Available choices: `big-endian` (default), `little-endian` |
 
 ### Options for output type `c-array`:
 | Option          | Description                                            |
