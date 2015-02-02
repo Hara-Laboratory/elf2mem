@@ -67,7 +67,7 @@ void print_mem_elem(std::vector<std::ostream *> &outs, size_t pos, int width, ui
 
 void print_mem_header(const char *name, std::vector<std::ostream *> &outs, int width, size_t pos) {
 	if (outs.size() > 0) {
-		*outs[0] << "const size_t " << name << "_address_begin = " << std::hex << std::showbase << pos << std::endl;
+		*outs[0] << "const size_t " << name << "_address_begin = " << std::hex << std::showbase << pos << ";" << std::endl;
 	}
 	if (outs.size() == 1) {
 		*outs[0] << char_type(width) << " " << name << "[] = {" << std::endl;
@@ -83,8 +83,8 @@ void print_mem_footer(const char *name, std::vector<std::ostream *> &outs, int w
 		*outs[i] << "};" << std::endl;
 	}
 	if (outs.size() > 0) {
-		*outs[outs.size() - 1] << "const size_t " << name << "_address_end = " << std::hex << std::showbase << pos << std::endl;
-		*outs[outs.size() - 1] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << ceilDiv(pos, width / 8 * outs.size()) << std::endl;
+		*outs[outs.size() - 1] << "const size_t " << name << "_address_end = " << std::hex << std::showbase << pos << ";" << std::endl;
+		*outs[outs.size() - 1] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << ceilDiv(pos, width / 8 * outs.size()) << ";" << std::endl;
 	}
 }
 
