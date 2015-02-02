@@ -21,6 +21,7 @@
 #include "memchunk.h"
 #include "printerC.h"
 #include "readerElf.h"
+#include "byteorder.h"
 
 #define MEMORY_SIZE 0x0e000000
 
@@ -57,6 +58,7 @@ int main (int argc, char **argv) {
 	size_t end_address = 0;
 	int split = 1;
 	int width = 8;
+	const char* byteorder_string = "big-endian";
 
 	static struct option long_options[] = {
 		{"start-address",  	required_argument, 	0,  'b' },
@@ -82,10 +84,9 @@ int main (int argc, char **argv) {
 			case 0:
 				if (!strcmp(long_options[option_index].name, "byte-order")) {
 					if (!strcmp(optarg, "little-endian")) {
-						std::cerr << "little endian is not supported yet!" << std::endl;
-						printusage(argv[0], std::cerr);
-						exit(EXIT_FAILURE);
+						byteorder_string = optarg;
 					} else if (!strcmp(optarg, "big-endian")) {
+						byteorder_string = optarg;
 					} else {
 						std::cerr << "unrecognizable byte-order: " << optarg << std::endl;
 						printusage(argv[0], std::cerr);
@@ -156,6 +157,22 @@ int main (int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
+	byteorder bo;
+	std::cout << "byte order: ";
+	if (!strcmp(byteorder_string, "big-endian")) {
+		bo = byteorder::bigendian(width / 8);
+		std::cout << "big-endian" << std::endl;
+	} else if (!strcmp(byteorder_string, "little-endian")) {
+		bo = byteorder::littleendian(width / 8);
+		std::cout << "little-endian" << std::endl;
+	}
+
+	std::cout << "order: ";
+	for (int i = 0; i < width / 8; ++i) {
+		std::cout << bo.index(i) << " ";
+	}
+	std::cout << std::endl;
+
 	if (output_file == NULL) {
 		std::ostringstream ostr;
 		ostr << basename(input_file) << ".h";
@@ -191,7 +208,7 @@ int main (int argc, char **argv) {
 	*/
 
 	std::ofstream ofs(output_file->c_str());
-	printerC printerc(output_name, begin_address_set, begin_address, end_address_set, end_address, split, width);
+	printerC printerc(output_name, begin_address_set, begin_address, end_address_set, end_address, split, width, bo);
 	printerc.print_mem(ofs, mem);
 
 	return 0;
