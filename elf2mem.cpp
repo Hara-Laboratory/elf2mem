@@ -38,7 +38,7 @@ void printusage(const char *name, std::ostream &ost) {
 	ost << "\t\t\tAvailable choices: 'c-array' (default)" << std::endl;
 	ost << "\t-o <filename>\tOutput file name (scheme). (default: basename of input file + \".h\")" << std::endl;
 	ost << "\t-s <num>\tSplit number. (default: 1)" << std::endl;
-	ost << "\t-w <num>\tOutput bitwidth." << std::endl;
+	ost << "\t-w <num>\tOutput bit-width." << std::endl;
 	ost << "\t\t\tAvailable choices: 8 (default), 16, 32, 64" << std::endl;
 	ost << "\t--byte-order <string>\tOutput byte order." << std::endl;
 	ost << "\t\t\tAvailable choices: little-endian, big-endian (default)" << std::endl;
@@ -66,7 +66,7 @@ int main (int argc, char **argv) {
 		{"type",  			required_argument, 	0,  't' },
 		{"output",  		required_argument, 	0,  'o' },
 		{"split",  			required_argument, 	0,  's' },
-		{"bitwidth",		required_argument, 	0,  'w' },
+		{"bit-width",		required_argument, 	0,  'w' },
 		{"byte-order",  		required_argument, 	0,  0 },
 		{"identifier",		required_argument, 	0,  'n' },
 		{0,         0,                 0,  0 }
