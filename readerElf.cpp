@@ -18,14 +18,14 @@ using namespace memory;
  * @param index of section to read
  * @return pointer to malloced data
  */
-static char *read_section(Elf *elf, size_t index) {
+static unsigned char *read_section(Elf *elf, size_t index) {
 	Elf_Scn *scn = elf_getscn(elf, index);
 	forcenonnull(scn,"elf_getscn() failed\n");
 
 	Elf32_Shdr *shdr = elf32_getshdr(scn);
 	forcenonnull(shdr,"elf32_getshdr() failed\n");
 
-	char *dst = (char *)malloc(shdr->sh_size);
+	unsigned char *dst = (unsigned char *)malloc(shdr->sh_size);
 	forcenonnull(dst,"malloc() failed\n");
 
 	Elf_Data *data = NULL;
@@ -48,7 +48,7 @@ static char *read_section(Elf *elf, size_t index) {
  * @return pointer to malloced data
  */
 static void read_section(Memory &mem, Elf *elf, size_t index) {
-	char *buf = read_section(elf, index);
+	unsigned char *buf = read_section(elf, index);
 
 	Elf_Scn *scn = elf_getscn(elf, index);
 	forcenonnull(scn,"elf_getscn() failed\n");
@@ -56,7 +56,7 @@ static void read_section(Memory &mem, Elf *elf, size_t index) {
 	Elf32_Shdr *shdr = elf32_getshdr(scn);
 	forcenonnull(shdr,"elf32_getshdr() failed\n");
 
-	std::vector<char> v(buf, buf + shdr->sh_size);
+	std::vector<unsigned char> v(buf, buf + shdr->sh_size);
 	Chunk ch(v);
 	mem.addChunk(shdr->sh_addr, ch);
 	free(buf);

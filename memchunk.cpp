@@ -7,9 +7,9 @@
 namespace memory {
 	bool Chunk::isZero() { return zero; }
 
-	std::vector<char> &Chunk::getContaint(){ return mem; }
+	std::vector<unsigned char> &Chunk::getContaint(){ return mem; }
 
-	Chunk::Chunk(std::vector<char> mem) : zero(0), length(mem.size()), mem(mem) {}
+	Chunk::Chunk(std::vector<unsigned char> mem) : zero(0), length(mem.size()), mem(mem) {}
 
 	bool Memory::addChunk(size_t start_addr, Chunk chunk) {
 		chunks.insert(std::make_pair(start_addr, chunk));
