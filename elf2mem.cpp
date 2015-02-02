@@ -38,6 +38,8 @@ void printusage(const char *name, std::ostream &ost) {
 	ost << "\t\t\tAvailable choices: 'c-array' (default)" << std::endl;
 	ost << "\t-o <filename>\tOutput file name (scheme). (default: basename of input file + \".h\")" << std::endl;
 	ost << "\t-s <num>\tSplit number. (default: 1)" << std::endl;
+	ost << "\t-w <num>\tOutput bitwidth." << std::endl;
+	ost << "\t\t\tAvailable choices: 8 (default), 16, 32, 64" << std::endl;
 	ost << std::endl;
 	ost << "for output type 'c-array':" << std::endl;
 	ost << "\t-n <name>\tIdentifier name. (default: basename of input file)" << std::endl;
@@ -53,9 +55,10 @@ int main (int argc, char **argv) {
 	bool end_address_set = false;
 	size_t end_address = 0;
 	int split = 1;
+	int width = 8;
 
 	int opt;
-	while ((opt = getopt(argc, argv, "t:o:b:e:En:s:")) != -1) {
+	while ((opt = getopt(argc, argv, "t:o:b:e:En:w:s:")) != -1) {
 		switch (opt) {
 			case 't':
 				if (!!strcmp(optarg, "c-array")) {
@@ -88,6 +91,11 @@ int main (int argc, char **argv) {
 			case 'n':
 				output_name = optarg;
 				break;
+			case 'w':
+			{
+				width = std::stoi(optarg);
+				break;
+			}
 			case 's':
 			{
 				std::istringstream istr(optarg);
@@ -150,7 +158,7 @@ int main (int argc, char **argv) {
 	*/
 
 	std::ofstream ofs(output_file->c_str());
-	printerC printerc(output_name, begin_address_set, begin_address, end_address_set, end_address, split);
+	printerC printerc(output_name, begin_address_set, begin_address, end_address_set, end_address, split, width);
 	printerc.print_mem(ofs, mem);
 
 	return 0;
