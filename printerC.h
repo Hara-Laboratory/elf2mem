@@ -29,7 +29,7 @@ class printerC {
 			name_(name),
 			split_(split),
 			width_(width),
-			order_(byteorder::bigendian(width))
+			order_(byteorder::bigendian(width / 8))
 	{};
 		printerC (const char * name, bool start_address_set, size_t start_addr, bool end_address_set, size_t end_addr, int split) :
 			start_address_(start_addr), end_address_(end_addr),
@@ -37,7 +37,7 @@ class printerC {
 			name_(name),
 			split_(split),
 			width_(8),
-			order_(byteorder::bigendian(8))
+			order_(byteorder::bigendian(1))
 	{};
 		// extern void print_mem(const char *name, std::vector<std::ostream *> &outs, size_t start, size_t end, memory::Memory mem) ;
 		void print_mem(std::ostream &outs, memory::Memory mem) ;
