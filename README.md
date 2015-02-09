@@ -13,12 +13,14 @@ elf2mem -s 4 -n MEM -o aout.h -b 0x01000 -e 0x0e000 a.out
 It outputs memory from 0x1000 to 0xe000, scattering each byte into four files.
 In the end, a array in each file will have 0x340 elements.
 
+Address is a value in _byte addressing_, but **not** word addressing.
+
 ## Options
 | Option          | Description                                            |
 | --------------- | ------------------------------------------------------ |
-| `-b` _addr_  		*or* `--start-address` _addr_ | Start address.                                         |
+| `-b` _addr_  		*or* `--start-address` _addr_ | Start address. (*byte addressing*)                                        |
 | `-B`            	*or* `--start-minimal`		| Output from the first section. (default)               |
-| `-e` _addr_  		*or* `--end-address` _addr_   | End address.                                           |
+| `-e` _addr_  		*or* `--end-address` _addr_   | End address. (*byte addressing*)                                          |
 | `-E`            	*or* `--end-minimal` 			| Output until end of the sections. (default)            |
 | `-t` _type_  		*or* `--type` _type_   		| Output type. <br> Available choices: `c-array` (default) |
 | `-o` _filename_ 	*or* `--output` _filename_	| Output file name (scheme).                             |
