@@ -119,8 +119,10 @@ void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
 		}
 	}
 	if (end_address_set_) {
-		for (; pos < end_address_; ++pos) {
+		while (pos < end_address_) {
 			print_mem_elem(outs, pos, width_, 0);
+
+			pos += width_ / 8;
 		}
 	}
 	print_mem_footer(name_, outs, width_, pos);
