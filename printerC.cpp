@@ -78,18 +78,19 @@ void print_mem_header(const char *name, std::vector<std::ostream *> &outs, int w
 	}
 }
 
-void print_mem_footer(const char *name, std::vector<std::ostream *> &outs, int width, size_t pos) {
+void print_mem_footer(const char *name, std::vector<std::ostream *> &outs, int width, size_t start, size_t pos) {
 	for (size_t i = 0; i < outs.size(); ++i) {
 		*outs[i] << "};" << std::endl;
 	}
 	if (outs.size() > 0) {
 		*outs[outs.size() - 1] << "const size_t " << name << "_address_end = " << std::hex << std::showbase << pos << ";" << std::endl;
-		*outs[outs.size() - 1] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << ceilDiv(pos, width / 8 * outs.size()) << ";" << std::endl;
+		*outs[outs.size() - 1] << "const size_t " << name << "_index_end = " << std::hex << std::showbase << ceilDiv(pos - start, width / 8 * outs.size()) << ";" << std::endl;
 	}
 }
 
 void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
-	size_t pos = start_address_set_ ? start_address_ : mem.firstAddress();
+	size_t start = start_address_set_ ? start_address_ : mem.firstAddress();
+	size_t pos = start;
 
 	print_mem_header(name_, outs, width_, pos);
 	while (!mem.empty()) {
@@ -125,7 +126,7 @@ void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
 			pos += width_ / 8;
 		}
 	}
-	print_mem_footer(name_, outs, width_, pos);
+	print_mem_footer(name_, outs, width_, start, pos);
 }
 
 void printerC::print_mem(std::ostream &ost, Memory mem) {
