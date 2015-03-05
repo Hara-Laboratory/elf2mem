@@ -41,8 +41,9 @@ void printusage(const char *name, std::ostream &ost) {
 	ost << "\t-s <num>\tSplit number. (default: 1)" << std::endl;
 	ost << "\t-w <num>\tOutput bit-width." << std::endl;
 	ost << "\t\t\tAvailable choices: 8 (default), 16, 32, 64" << std::endl;
-	ost << "\t--byte-order <string>\tOutput byte order." << std::endl;
+	ost << "\t--byte-order <byteorder>\tOutput byte order." << std::endl;
 	ost << "\t\t\tAvailable choices: little-endian, big-endian (default)" << std::endl;
+	ost << "\t-x, --extra=<filename>\tExtra input source." << std::endl;
 	ost << std::endl;
 	ost << "for output type 'c-array':" << std::endl;
 	ost << "\t-n <name>\tIdentifier name. (default: basename of input file)" << std::endl;
@@ -59,6 +60,7 @@ int main (int argc, char **argv) {
 	int split = 1;
 	int width = 8;
 	const char* byteorder_string = "big-endian";
+	std::vector<std::string> extra_files;
 
 	static struct option long_options[] = {
 		{"start-address",  	required_argument, 	0,  'b' },
@@ -71,12 +73,13 @@ int main (int argc, char **argv) {
 		{"bit-width",		required_argument, 	0,  'w' },
 		{"byte-order",  		required_argument, 	0,  0 },
 		{"identifier",		required_argument, 	0,  'n' },
+		{"extra",			required_argument, 	0,  'x' },
 		{0,         0,                 0,  0 }
 	};
 	int opt;
 	while (1) {
 		int option_index = 0;
-		opt = getopt_long(argc, argv, "t:o:b:e:En:w:s:", long_options, &option_index);
+		opt = getopt_long(argc, argv, "t:o:b:e:En:w:s:x:", long_options, &option_index);
 		if (opt == -1)
 			break;
 
@@ -139,6 +142,11 @@ int main (int argc, char **argv) {
 				}
 				break;
 			}
+			case 'x':
+			{
+				extra_files.push_back(optarg);
+				break;
+			}
 			default:
 				std::cerr << "unknown option." << std::endl;
 				exit(EXIT_FAILURE);
@@ -193,6 +201,11 @@ int main (int argc, char **argv) {
 
 	Memory mem;
 	read_elf(mem, fp);
+
+	for (auto it = extra_files.begin(); it != extra_files.end(); ++it) {
+		std::cout << "open extra: " << *it << std::endl;
+		std::ifstream ifs(*it);
+	}
 
 	/*
 	// std::vector<FILE *> outs;
