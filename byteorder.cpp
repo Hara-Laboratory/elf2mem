@@ -1,8 +1,13 @@
+#include <stdexcept>
 #include <vector>
 #include "byteorder.h"
 
 int byteorder::index(int n) const {
 	return order_[n];
+}
+
+int byteorder::size(void) const {
+	return order_.size();
 }
 
 byteorder byteorder::bigendian(int n) {
@@ -19,4 +24,14 @@ byteorder byteorder::littleendian(int n) {
 		v[i] = n - i - 1;
 	}
 	return byteorder(v);
+}
+
+byteorder byteorder::from_string(std::string type, int n) {
+	if (!type.compare("little-endian")) {
+		return littleendian(n);
+	} else if (!type.compare("big-endian")) {
+		return bigendian(n);
+	} else {
+		throw std::invalid_argument("Unknown byteorder string.");
+	}
 }
