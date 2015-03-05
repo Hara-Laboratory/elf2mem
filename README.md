@@ -27,6 +27,7 @@ Address is a value in _byte addressing_, but **not** word addressing.
 | `-s` _num_      	*or* `--split` _num_ 			| Split number.                                          |
 | `-w` _num_      	*or* `--bit-width` _num_ 		| Output bit-width. <br> Available choices: 8 (default), 16, 32, 64 |
 | `--byte-order` _order_ 						| Output byte-order. <br> Available choices: `big-endian` (default), `little-endian` |
+| `-x` _filename_  	*or* `--extra` _filename_ 		| Extra input file with special format. (multple occasion is allowed) |
 
 ### Options for output type `c-array`:
 | Option          | Description                                            |
@@ -42,3 +43,22 @@ Address is a value in _byte addressing_, but **not** word addressing.
 - `.data`
 - `.rodata`
 - `.bss` (nothing to do for support ;)
+
+## Example of Extra Input
+All addresses is prefexed with `@` and word addressing.
+
+```
+[header]
+    version: 1
+    byte-order: big-endian
+    word-size: 4
+    type: packed
+    end: 208
+
+[symbols]
+    add: @193
+    mult: @100
+
+[text]
+    @100: 6 1 118 1 6 106 6 10 109 6 10 112 6 6 115 4 9 118 1 10 121 5 9 124 6 2 142 2 6 130 6 11 133 6 11 136 6 6 139 4 9 142 2 11 145 5 9 148 288 288 151 5 10 157 11 288 151 6 9 169 9 9 163 10 10 166 6 6 -1 10 10 172 288 10 175 11 11 178 10 11 181 288 288 184 11 288 187 4 9 169 6 4 160 2 6 196 3 6 199 1 1 202 6 1 205 6 6 -1
+```
