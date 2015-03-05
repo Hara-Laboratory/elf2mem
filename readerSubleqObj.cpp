@@ -112,8 +112,8 @@ static std::pair<std::string, SubleqObjSectionType> read_section_name(std::istre
 	    std::cerr << "Section header '" << str << "' is illegal format.\n";
 	    exit(EXIT_FAILURE);
 	}
-	std::cout << str << std::endl;
-	std::cout << name_start << ", " << name_end << std::endl;
+	// std::cout << str << std::endl;
+	// std::cout << name_start << ", " << name_end << std::endl;
 
 	auto header_name = str.substr(name_start, name_end - name_start);
 	return std::make_pair(header_name, default_section_type(header_name));
@@ -127,12 +127,14 @@ void read_extra(Memory &mem, std::istream &is)
 {
     auto header_name = read_section_name(is);
 
-    std::cout << ":" << header_name.first << ": " << static_cast<int>(header_name.second) << std::endl;
+    // std::cout << ":" << header_name.first << ": " << static_cast<int>(header_name.second) << std::endl;
 
     auto header = read_keyvalue_section(is);
     
+    /*
     for (std::map<std::string,std::string>::iterator it = header->begin(); it != header->end(); ++it)
 	std::cout << it->first << ": " << it->second << std::endl;
+    */
 
     int version = std::stoi((*header)[keyname_version]);
     if (version < supported_version_lower || version > supported_version_upper) {
@@ -145,7 +147,7 @@ void read_extra(Memory &mem, std::istream &is)
     }
 
     if (!header->count(keyname_wordlength)) {
-	std::cerr << "Word length is not given. I assume 4 bytes.";
+	std::cerr << "Word length is not given. I assume 4 octets.";
 	(*header)[keyname_wordlength] = "4";
     }
     auto length = std::stoi((*header)[keyname_wordlength]);
@@ -154,7 +156,6 @@ void read_extra(Memory &mem, std::istream &is)
 
     while (true) {
 	auto section = read_section_name(is);
-	std::cout << ":" << section.first << ": " << static_cast<int>(section.second) << std::endl;
 
 	if (!section.first.compare("text")) {
 	    break;
