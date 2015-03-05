@@ -55,7 +55,7 @@ static std::map<std::string, std::string> *read_keyvalue_section(std::istream &i
 
 static bool read_memory_section(std::istream &ism, Memory &mem, byteorder order) {
 
-    unsigned int addr;
+    unsigned int addr = 0;
     std::vector<unsigned char> v;
     std::string str;
     while (std::getline(ism, str)) {
@@ -67,33 +67,28 @@ static bool read_memory_section(std::istream &ism, Memory &mem, byteorder order)
 	auto value_start = addr_end == std::string::npos ? 0 : addr_end + 1;
 	if (addr_start != std::string::npos) {
 	    if (v.size() != 0) {
-		std::cout << "append: " << addr << std::endl;
+		// std::cout << "append: " << addr << std::endl;
 		Chunk ch(v);
-		mem.addChunk(addr, ch);
+		mem.addChunk(order.size() * addr, ch);
 	    }
 	    auto addr_str = str.substr(addr_start + 1, addr_end - addr_start - 1);
-	    std::cout << "addr str: " << addr_str << std::endl;
 	    addr = std::stoi(addr_str);
-	    std::cout << "addr: " << addr << std::endl;
 	}
 	auto value_str = str.substr(value_start);
 	std::istringstream value_s(value_str);
 
 	unsigned int value;
 	while (value_s >> value) {
-	    std::cout << "value: " << value;
 	    for (int i = 0; i < order.size(); ++i) {
 		unsigned char ch = value >> (8 * (order.size() - order.index(i) - 1));
 		v.push_back(ch);
-		std::cout << ", " << (int)ch;
 	    }
-	    std::cout << std::endl;
 	}
     }
 
-    std::cout << "append: " << addr << std::endl;
+    // std::cout << "append: " << addr << std::endl;
     Chunk ch(v);
-    mem.addChunk(addr, ch);
+    mem.addChunk(order.size() * addr, ch);
 
     return true;
 }
