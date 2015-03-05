@@ -138,16 +138,16 @@ void read_extra(Memory &mem, std::istream &is)
 
     int version = std::stoi((*header)[keyname_version]);
     if (version < supported_version_lower || version > supported_version_upper) {
-	std::cerr << "File format version " << version << " is not supported by this program. Only " << supported_version_lower << " to " << supported_version_upper << ".";
+	std::cerr << "File format version " << version << " is not supported by this program. Only " << supported_version_lower << " to " << supported_version_upper << "." << std::endl;
     }
 
     if (!header->count(keyname_byteorder)) {
-	std::cerr << "Byte order is not given. I assume \"big-endian\".";
+	std::cerr << "Byte order is not given. I assume \"big-endian\"." << std::endl;
 	(*header)[keyname_byteorder] = "big-endian";
     }
 
     if (!header->count(keyname_wordlength)) {
-	std::cerr << "Word length is not given. I assume 4 octets.";
+	std::cerr << "Word length is not given. I assume 4 octets." << std::endl;
 	(*header)[keyname_wordlength] = "4";
     }
     auto length = std::stoi((*header)[keyname_wordlength]);
@@ -166,3 +166,4 @@ void read_extra(Memory &mem, std::istream &is)
 
     read_memory_section(is, mem, order);
 }
+// vim: set noet fenc=utf-8 ff=unix sts=0 sw=4 ts=8 : 
