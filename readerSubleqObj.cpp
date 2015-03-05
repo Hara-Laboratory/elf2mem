@@ -128,7 +128,7 @@ static std::pair<std::string, SubleqObjSectionType> read_section_name(std::istre
     }
 }
 
-void read_extra(Memory &mem, std::istream is)
+void read_extra(Memory &mem, std::istream &is)
 {
     auto header_name = read_section_name(is);
 

@@ -21,6 +21,7 @@
 #include "memchunk.h"
 #include "printerC.h"
 #include "readerElf.h"
+#include "readerSubleqObj.h"
 #include "byteorder.h"
 
 #define MEMORY_SIZE 0x0e000000
@@ -205,6 +206,8 @@ int main (int argc, char **argv) {
 	for (auto it = extra_files.begin(); it != extra_files.end(); ++it) {
 		std::cout << "open extra: " << *it << std::endl;
 		std::ifstream ifs(*it);
+		// std::istream &is = ifs;
+		read_extra(mem, ifs);
 	}
 
 	/*
