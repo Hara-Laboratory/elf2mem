@@ -14,7 +14,7 @@
 #define errorif2(test,fmt,...) do{if(test){fprintf(stderr, "%s:%s:%d: " fmt "\n",__FILE__, __func__, __LINE__, __VA_ARGS__);exit(EXIT_FAILURE);}}while(0)
 
 static const std::string keyname_version = "version";
-static const std::string keyname_byteorder = "byteorder";
+static const std::string keyname_byteorder = "byte-order";
 static const std::string keyname_wordlength = "word-size";
 
 using namespace memory;
