@@ -5,7 +5,7 @@ CFLAGS=-g -O2
 CXXFLAGS=-g -std=c++0x -O3 -Wall -Wno-format-extra-args
 
 LDFLAGS=-lelf
-SOURCES=byteorder.cpp memchunk.cpp printerC.cpp readerElf.cpp
+SOURCES=byteorder.cpp memchunk.cpp printerC.cpp readerElf.cpp readerSubleqObj.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 TARGET=elf2mem
  
