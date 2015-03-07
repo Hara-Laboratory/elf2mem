@@ -23,7 +23,7 @@ class Chunk {
 class Memory {
 	private:
 		size_t entry_;
-		std::map<size_t, Chunk> chunks;
+		std::map<size_t, Chunk> chunks_;
 	public:
 		void entry(size_t x) { entry_ = x; };
 		size_t entry() { return entry_; };

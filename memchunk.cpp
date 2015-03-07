@@ -16,22 +16,22 @@ namespace memory {
 	const std::string &Chunk::name() { return name_; }
 
 	bool Memory::addChunk(size_t start_addr, Chunk chunk) {
-		chunks.insert(std::make_pair(start_addr, chunk));
+		chunks_.insert(std::make_pair(start_addr, chunk));
 		return true;
 	}
 
 	std::pair<size_t, Chunk> Memory::popChunk(void) {
-		auto it = chunks.begin();
+		auto it = chunks_.begin();
 		auto v = it->second;
 		auto k = it->first;
-		chunks.erase(k);
+		chunks_.erase(k);
 		return std::make_pair(k, v);
 	}
 
 	size_t Memory::firstAddress(void) {
-		auto it = chunks.begin();
+		auto it = chunks_.begin();
 		return it->first;
 	}
 
-	bool Memory::empty(void) { return chunks.empty(); }
+	bool Memory::empty(void) { return chunks_.empty(); }
 }
