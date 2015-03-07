@@ -7,7 +7,7 @@
 namespace memory {
 	bool Chunk::isZero() { return zero_; }
 
-	std::vector<unsigned char> &Chunk::getContaint(){ return mem_; }
+	const std::vector<unsigned char> &Chunk::getContaint(){ return mem_; }
 
 	Chunk::Chunk(std::vector<unsigned char> mem) : zero_(0), length_(mem.size()), mem_(mem), name_("") {}
 

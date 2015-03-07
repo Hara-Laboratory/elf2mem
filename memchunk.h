@@ -16,7 +16,7 @@ class Chunk {
 		// Chunk(size_t);
 		Chunk(std::vector<unsigned char> mem);
 		Chunk(std::string name, std::vector<unsigned char> mem);
-		std::vector<unsigned char> &getContaint(void);
+		const std::vector<unsigned char> &getContaint(void);
 		const std::string &name(void);
 		bool isZero();
 };
