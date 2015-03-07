@@ -208,7 +208,7 @@ int main (int argc, char **argv) {
 		std::cout << "open extra: " << *it << std::endl;
 		std::ifstream ifs(*it);
 		// std::istream &is = ifs;
-		read_extra(mem, ifs);
+		read_extra(mem, ifs, basename(it->c_str()));
 	}
 
 	std::cout << "Chunks: " << std::endl;
