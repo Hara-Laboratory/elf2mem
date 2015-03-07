@@ -96,7 +96,13 @@ void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
 	while (!mem.empty()) {
 		auto t = mem.popChunk();
 		size_t addr = t.first;
+		auto &chunk = t.second;
 		auto ch = t.second.getContaint();
+		if (!chunk.name().empty()) {
+		    std::cerr << "Writing chunk '" << t.second.name() << "'." << std::endl;
+		} else {
+		    std::cerr << "Writing anonymous chunk." << std::endl;
+		}
 		while (pos < addr && (!end_address_set_ || pos < end_address_)) {
 			print_mem_elem(outs, pos, width_, 0);
 			pos += width_ / 8;
