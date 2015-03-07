@@ -8,9 +8,9 @@
 namespace memory {
 class Chunk {
 	private:
-		bool zero;
-		size_t length;
-		std::vector<unsigned char> mem;
+		bool zero_;
+		size_t length_;
+		std::vector<unsigned char> mem_;
 	public:
 		Chunk(size_t);
 		Chunk(std::vector<unsigned char> mem);
