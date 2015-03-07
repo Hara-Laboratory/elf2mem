@@ -56,8 +56,21 @@ static void read_section(Memory &mem, Elf *elf, size_t index) {
 	Elf32_Shdr *shdr = elf32_getshdr(scn);
 	forcenonnull(shdr,"elf32_getshdr() failed\n");
 
+	size_t shstrndx;
+	if (elf_getshdrstrndx (elf , &shstrndx) != 0) {
+		fprintf(stderr, " elf_getshdrstrndx () failed. ");
+		exit(EXIT_FAILURE);
+	}
+
+	char *name;
+	if ((name = elf_strptr(elf, shstrndx, shdr->sh_name)) == NULL) {
+	    fprintf(stderr, "elf_strptr() failed.\n");
+	    exit(EXIT_FAILURE);
+	}
+
+	std::string elf_name_header = "elf";
 	std::vector<unsigned char> v(buf, buf + shdr->sh_size);
-	Chunk ch(v);
+	Chunk ch(elf_name_header + name, v);
 	mem.addChunk(shdr->sh_addr, ch);
 	free(buf);
 }
