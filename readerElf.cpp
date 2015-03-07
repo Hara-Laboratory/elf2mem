@@ -11,6 +11,8 @@
 
 using namespace memory;
 
+static const std::string elf_name_header = "elf";
+
 /**
  * Read data of given section from ELF file.
  *
@@ -68,11 +70,41 @@ static void read_section(Memory &mem, Elf *elf, size_t index) {
 	    exit(EXIT_FAILURE);
 	}
 
-	std::string elf_name_header = "elf";
 	std::vector<unsigned char> v(buf, buf + shdr->sh_size);
 	Chunk ch(elf_name_header + name, v);
 	mem.addChunk(shdr->sh_addr, ch);
 	free(buf);
+}
+
+/**
+ * Read data of given section from ELF file to Memory.
+ *
+ * @param elf file
+ * @param index of section to read
+ * @return pointer to malloced data
+ */
+static void read_section_empty(Memory &mem, Elf *elf, size_t index) {
+	Elf_Scn *scn = elf_getscn(elf, index);
+	forcenonnull(scn,"elf_getscn() failed\n");
+
+	Elf32_Shdr *shdr = elf32_getshdr(scn);
+	forcenonnull(shdr,"elf32_getshdr() failed\n");
+
+	size_t shstrndx;
+	if (elf_getshdrstrndx (elf , &shstrndx) != 0) {
+		fprintf(stderr, " elf_getshdrstrndx () failed. ");
+		exit(EXIT_FAILURE);
+	}
+
+	char *name;
+	if ((name = elf_strptr(elf, shstrndx, shdr->sh_name)) == NULL) {
+	    fprintf(stderr, "elf_strptr() failed.\n");
+	    exit(EXIT_FAILURE);
+	}
+
+	std::vector<unsigned char> v(shdr->sh_size, 0);
+	Chunk ch(elf_name_header + name, v);
+	mem.addChunk(shdr->sh_addr, ch);
 }
 
 /**
@@ -132,6 +164,7 @@ unsigned int read_elf(Memory &mem, FILE *fp) {
 			ptrheap = std::max(ptrheap, shdr->sh_addr + shdr->sh_size);
 		} 
 		else if (!strcmp(name, ".bss")) {
+			read_section_empty(mem, elf, i);
 			ptrheap = std::max(ptrheap, shdr->sh_addr + shdr->sh_size);
 			//	  else if (!strcmp(name, ".symtab"))
 			//		symtabndx = i;
