@@ -13,6 +13,8 @@ namespace memory {
 
 	Chunk::Chunk(std::string name, std::vector<unsigned char> mem) : zero_(0), length_(mem.size()), mem_(mem), name_(name) {}
 
+	size_t Chunk::size(void) { return length_; }
+
 	const std::string &Chunk::name() { return name_; }
 
 	bool Memory::addChunk(size_t start_addr, Chunk chunk) {
@@ -34,4 +36,5 @@ namespace memory {
 	}
 
 	bool Memory::empty(void) { return chunks_.empty(); }
+	std::map<size_t, Chunk> Memory::chunks(void) { return chunks_; }
 }

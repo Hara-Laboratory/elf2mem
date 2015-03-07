@@ -18,6 +18,7 @@ class Chunk {
 		Chunk(std::string name, std::vector<unsigned char> mem);
 		const std::vector<unsigned char> &getContaint(void);
 		const std::string &name(void);
+		size_t size(void);
 		bool isZero();
 };
 class Memory {
@@ -31,6 +32,7 @@ class Memory {
 		std::pair<size_t, Chunk> popChunk(void);
 		size_t firstAddress(void);
 		bool empty(void);
+		std::map<size_t, Chunk> chunks(void);
 };
 }
 #endif
