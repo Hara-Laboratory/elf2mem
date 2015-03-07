@@ -11,10 +11,13 @@ class Chunk {
 		bool zero_;
 		size_t length_;
 		std::vector<unsigned char> mem_;
+		std::string name_;
 	public:
-		Chunk(size_t);
+		// Chunk(size_t);
 		Chunk(std::vector<unsigned char> mem);
-		std::vector<unsigned char> &getContaint();
+		Chunk(std::string name, std::vector<unsigned char> mem);
+		std::vector<unsigned char> &getContaint(void);
+		const std::string &name(void);
 		bool isZero();
 };
 class Memory {

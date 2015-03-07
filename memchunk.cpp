@@ -9,7 +9,11 @@ namespace memory {
 
 	std::vector<unsigned char> &Chunk::getContaint(){ return mem_; }
 
-	Chunk::Chunk(std::vector<unsigned char> mem) : zero_(0), length_(mem.size()), mem_(mem) {}
+	Chunk::Chunk(std::vector<unsigned char> mem) : zero_(0), length_(mem.size()), mem_(mem), name_("") {}
+
+	Chunk::Chunk(std::string name, std::vector<unsigned char> mem) : zero_(0), length_(mem.size()), mem_(mem), name_(name) {}
+
+	const std::string &Chunk::name() { return name_; }
 
 	bool Memory::addChunk(size_t start_addr, Chunk chunk) {
 		chunks.insert(std::make_pair(start_addr, chunk));
