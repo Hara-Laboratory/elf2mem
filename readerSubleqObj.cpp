@@ -53,11 +53,19 @@ static std::map<std::string, std::string> *read_keyvalue_section(std::istream &i
     return sec;
 }
 
-static bool read_memory_section(std::istream &ism, Memory &mem, byteorder order) {
+static std::string make_chunk_name(const std::string &name, size_t addr) {
+    std::ostringstream ostrs;
+    ostrs << name << "@" << std::hex << addr;
+    auto && str = ostrs.str();
+    return std::move(str);
+}
+
+static bool read_memory_section(std::istream &ism, Memory &mem, byteorder order, const std::string &name) {
 
     unsigned int addr = 0;
     std::vector<unsigned char> v;
     std::string str;
+    std::string chunk_name;
     while (std::getline(ism, str)) {
 	if (!str.compare(""))
 	    break;
@@ -68,11 +76,12 @@ static bool read_memory_section(std::istream &ism, Memory &mem, byteorder order)
 	if (addr_start != std::string::npos) {
 	    if (v.size() != 0) {
 		// std::cout << "append: " << addr << std::endl;
-		Chunk ch(v);
+		Chunk ch(chunk_name, v);
 		mem.addChunk(order.size() * addr, ch);
 	    }
 	    auto addr_str = str.substr(addr_start + 1, addr_end - addr_start - 1);
 	    addr = std::stoi(addr_str);
+	    chunk_name = make_chunk_name(name, addr);
 	}
 	auto value_str = str.substr(value_start);
 	std::istringstream value_s(value_str);
@@ -87,7 +96,7 @@ static bool read_memory_section(std::istream &ism, Memory &mem, byteorder order)
     }
 
     // std::cout << "append: " << addr << std::endl;
-    Chunk ch(v);
+    Chunk ch(chunk_name, v);
     mem.addChunk(order.size() * addr, ch);
 
     return true;
@@ -123,7 +132,7 @@ static std::pair<std::string, SubleqObjSectionType> read_section_name(std::istre
     }
 }
 
-void read_extra(Memory &mem, std::istream &is)
+void read_extra(Memory &mem, std::istream &is, const std::string &name = "")
 {
     auto header_name = read_section_name(is);
 
@@ -164,6 +173,6 @@ void read_extra(Memory &mem, std::istream &is)
 	}
     }
 
-    read_memory_section(is, mem, order);
+    read_memory_section(is, mem, order, name);
 }
 // vim: set noet fenc=utf-8 ff=unix sts=0 sw=4 ts=8 : 

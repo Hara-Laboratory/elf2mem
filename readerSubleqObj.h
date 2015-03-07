@@ -2,4 +2,4 @@
 #include <istream>
 #include "memchunk.h"
 
-void read_extra(memory::Memory &mem, std::istream &is);
+void read_extra(memory::Memory &mem, std::istream &is, const std::string &name = "");
