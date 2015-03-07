@@ -224,7 +224,7 @@ int main (int argc, char **argv) {
 			std::cout << "chunk " << chunk.name();
 		}
 		std::cout << ": "  << std::hex << std::showbase << start << " -- " << start + chunk.size() - 1;
-		std::cout << std::dec << " (" << chunk.size() << ")" << std::endl;
+		std::cout << " (" << chunk.size() << ")" << std::dec << std::endl;
 	}
 	/*
 	// std::vector<FILE *> outs;
