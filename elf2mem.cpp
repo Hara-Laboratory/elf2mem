@@ -18,6 +18,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 #include "memchunk.h"
 #include "printerC.h"
 #include "readerElf.h"
@@ -210,6 +211,21 @@ int main (int argc, char **argv) {
 		read_extra(mem, ifs);
 	}
 
+	std::cout << "Chunks: " << std::endl;
+	auto chunks = mem.chunks();
+	for (auto it = chunks.begin(); it != chunks.end(); ++it) {
+		auto start = it->first;
+		auto chunk = it->second;
+
+		std::cout << "\t";
+		if (chunk.name().empty()) {
+			std::cout << "anonymous chunk";
+		} else {
+			std::cout << "chunk " << chunk.name();
+		}
+		std::cout << ": "  << std::hex << std::showbase << start << " -- " << start + chunk.size() - 1;
+		std::cout << std::dec << " (" << chunk.size() << ")" << std::endl;
+	}
 	/*
 	// std::vector<FILE *> outs;
 	std::vector<FILE *> outs;
