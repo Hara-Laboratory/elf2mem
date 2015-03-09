@@ -2,6 +2,7 @@
 #define MEMCHUNK_H_READ
 #include<cstddef>
 #include<vector>
+#include<string>
 #include<map>
 #include<tuple>
 
