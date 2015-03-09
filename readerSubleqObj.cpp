@@ -78,6 +78,7 @@ static bool read_memory_section(std::istream &ism, Memory &mem, byteorder order,
 		// std::cout << "append: " << addr << std::endl;
 		Chunk ch(chunk_name, v);
 		mem.addChunk(order.size() * addr, ch);
+		v.clear();
 	    }
 	    auto addr_str = str.substr(addr_start + 1, addr_end - addr_start - 1);
 	    addr = std::stoi(addr_str);
