@@ -30,7 +30,7 @@
 using namespace memory;
 
 void printusage(const char *name, std::ostream &ost) {
-	ost << "USAGE: " << name << " [options] [-o <output_file>] <input_file> " << std::endl;
+	ost << "USAGE: " << name << " [options] [-o <output_file>] [<input_file>] " << std::endl;
 	ost << std::endl;
 	ost << "OPTIONS:" << std::endl;
 	ost << "\t-b <addr>\tStart address." << std::endl;
@@ -157,11 +157,7 @@ int main (int argc, char **argv) {
 
 	if (optind == argc - 1) {
 		input_file = argv[optind];
-	} else if (optind == argc) {
-		std::cerr << "input file is not given" << std::endl;
-		printusage(argv[0], std::cerr);
-		exit(EXIT_FAILURE);
-	} else {
+	} else if (optind > argc) {
 		std::cerr << "too many arguments" << std::endl;
 		printusage(argv[0], std::cerr);
 		exit(EXIT_FAILURE);
@@ -183,26 +179,35 @@ int main (int argc, char **argv) {
 	}
 	std::cout << std::endl;
 
-	if (output_file == NULL) {
+	if (output_file == NULL && input_file == NULL) {
+		std::cerr << "output file and input file are not given" << std::endl;
+		exit(EXIT_FAILURE);
+	} else if (output_file == NULL) {
 		std::ostringstream ostr;
 		ostr << basename(input_file) << ".h";
 		output_file = new std::string(ostr.str());
 	}
 	std::cout << "output: " << *output_file << std::endl;
 
-	if (output_name == NULL) {
+	if (output_name == NULL && input_file == NULL) {
+		std::cerr << "output name and input file are not given" << std::endl;
+		exit(EXIT_FAILURE);
+	} else if (output_name == NULL) {
 		output_name = basename(input_file);
 	}
 	std::cout << "identifier: " << output_name << std::endl;
 
-	FILE *fp = fopen(input_file, "r");
-	if (fp == NULL){
-		printf("Can't open elf_file\n");
-		exit(1);
-	}
-
 	Memory mem;
-	read_elf(mem, fp);
+	if (input_file != NULL) {
+		std::cout << "input elf: " << *input_file << std::endl;
+		FILE *fp = fopen(input_file, "r");
+		if (fp == NULL){
+			printf("Can't open elf_file\n");
+			exit(1);
+		}
+
+		read_elf(mem, fp);
+	}
 
 	for (auto it = extra_files.begin(); it != extra_files.end(); ++it) {
 		std::cout << "open extra: " << *it << std::endl;
