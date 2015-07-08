@@ -76,6 +76,7 @@ int main (int argc, char **argv) {
 		{"byte-order",  		required_argument, 	0,  0 },
 		{"identifier",		required_argument, 	0,  'n' },
 		{"extra",			required_argument, 	0,  'x' },
+		{"help",			no_argument, 	0,  '-' },
 		{0,         0,                 0,  0 }
 	};
 	int opt;
@@ -151,6 +152,7 @@ int main (int argc, char **argv) {
 			}
 			default:
 				std::cerr << "unknown option." << std::endl;
+				printusage(argv[0], std::cerr);
 				exit(EXIT_FAILURE);
 		}
 	}
@@ -159,7 +161,6 @@ int main (int argc, char **argv) {
 		input_file = argv[optind];
 	} else if (optind > argc) {
 		std::cerr << "too many arguments" << std::endl;
-		printusage(argv[0], std::cerr);
 		exit(EXIT_FAILURE);
 	}
 
