@@ -107,8 +107,8 @@ void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
 			print_mem_elem(outs, pos, width_, 0);
 			pos += width_ / 8;
 		}
-		if (pos >= end_address_) {
-			std::cerr << "end address is small" << " (current position: " << pos << ")" << std::endl;
+		if (end_address_set_ && pos >= end_address_) {
+			std::cerr << "end address (" << end_address_ << ") is small" << " (current position: " << pos << ")" << std::endl;
 			exit(EXIT_FAILURE);
 		} else if (pos != addr) {
 			std::cerr << "address is not aligned" << " (current position: " << pos << ", expected: " << addr << ")" << std::endl;
