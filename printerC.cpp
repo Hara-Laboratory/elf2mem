@@ -1,3 +1,4 @@
+#include <boost/algorithm/string.hpp>
 #include <stdio.h>
 #include <limits>
 #include <iomanip>
@@ -63,6 +64,14 @@ void print_mem_elem(std::vector<std::ostream *> &outs, size_t pos, int width, ui
 	const char *footer = (nelem % ELEMENT_PER_LINE == (ELEMENT_PER_LINE - 1)) ? ",\n" : ", ";
 	// *outs[outn] << "/* " << std::hex << std::showbase << pos << "*/";
 	*outs[outn] << header << "0x" << std::hex << std::noshowbase << std::setfill('0') << std::setw(ceilDiv(width, 4)) << v << footer;
+}
+
+void print_symbols(std::ostream &out, const std::map<std::string, size_t> &symbols) {
+	for (auto && p : symbols) {
+		auto & name = p.first;
+		auto & addr = p.second;
+		out << "#define " << boost::to_upper_copy(name) << "_ROUTINE " << addr << std::endl;
+	}
 }
 
 void print_mem_header(const char *name, std::vector<std::ostream *> &outs, int width, size_t pos) {
