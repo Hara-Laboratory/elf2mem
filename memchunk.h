@@ -26,6 +26,7 @@ class Memory {
 	private:
 		size_t entry_;
 		std::map<size_t, Chunk> chunks_;
+		std::map<std::string, size_t> symbols_;
 	public:
 		void entry(size_t x) { entry_ = x; };
 		size_t entry() { return entry_; };
