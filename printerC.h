@@ -13,7 +13,7 @@ class printerC {
 		const int split_;
 		const int width_;
 		const byteorder order_;
-		const bool print_header_;
+		const bool print_header_ = false;
 		void print_mem(std::vector<std::ostream *> &outs, memory::Memory mem) ;
 	public:
 		printerC (const char * name, bool start_address_set, size_t start_addr, bool end_address_set, size_t end_addr, int split, int width, byteorder order) :
