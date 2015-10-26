@@ -142,6 +142,11 @@ void printerC::print_mem(std::vector<std::ostream *> &outs, Memory mem) {
 		}
 	}
 	print_mem_footer(name_, outs, width_, start, pos);
+
+	if (outs.size() > 0) {
+		*outs.at(0) << std::endl << "// Symbols:" << std::endl;
+		print_symbols(*outs.at(0), mem.symbols());
+	}
 }
 
 void printerC::print_mem(std::ostream &ost, Memory mem) {
