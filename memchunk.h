@@ -28,6 +28,9 @@ class Memory {
 		std::map<size_t, Chunk> chunks_;
 		std::map<std::string, size_t> symbols_;
 	public:
+		const std::map<std::string, size_t> & symbols() { return symbols_; };
+		void symbols(const std::map<std::string, size_t> &symbt) { symbols_ = symbt; };
+		void symbols(const std::map<std::string, size_t> &&symbt) { symbols_ = std::move(symbt); };
 		void entry(size_t x) { entry_ = x; };
 		size_t entry() { return entry_; };
 		bool addChunk(size_t start_addr, Chunk chunk);
