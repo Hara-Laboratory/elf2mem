@@ -37,6 +37,7 @@ Address is a value in _byte addressing_, but **not** word addressing.
 ## Dependencies
 - libelf
 - getopt
+- boost
 
 ## Supporting sections
 - `.text`
