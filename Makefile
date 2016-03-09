@@ -34,6 +34,7 @@ clean:
 	rm -rf $(TARGET) $(OBJECTS) *.d
 
 install-porg: $(TARGET)
+	[ -d "$(BIN_DIR)" ] || mkdir -p "$(BIN_DIR)"
 	$(call check_defined, BIN_DIR, where to put binary artifacts)
 	porg -lp $(PKGNAME)-$(PKGVER) cp "$(TARGET)" "$(BIN_DIR)/"
 
